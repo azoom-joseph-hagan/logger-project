@@ -30,9 +30,6 @@
               ></v-text-field>
               <v-btn @click="changeUsername">Change</v-btn>
             </div>
-            <div>
-              <p>Name and Id: {{ store.nameAndId }}</p>
-            </div>
           </v-card-item>
         </v-card>
       </v-col>
@@ -49,9 +46,9 @@ const { userId } = useRoute().params;
 const store = useUserStore();
 const usersRef = storeToRefs(store);
 
-console.log("UsersRef: ", usersRef.users.value[+userId - 1]);
-
 const userFromStore = usersRef.users.value[+userId - 1];
+const userFromGetter = store.getCurrentUser(+userId);
+console.log("User from getter: ", userFromGetter, "User Id: ", +userId);
 
 const input = ref("");
 
