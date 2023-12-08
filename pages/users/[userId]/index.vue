@@ -13,7 +13,7 @@
                     </v-btn>
                     <ProfileButton
                       :name="userFromStore.name"
-                      :image="user?.image"
+                      :image="userFromStore.image"
                     />
                   </div>
                 </div>
@@ -40,7 +40,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { userData } from "../../../data/data";
 import { useUserStore } from "../../../stores/userStore";
 const { userId } = useRoute().params;
 const store = useUserStore();
@@ -48,19 +47,23 @@ const usersRef = storeToRefs(store);
 
 const userFromStore = usersRef.users.value[+userId - 1];
 const userFromGetter = store.getCurrentUser(+userId);
-console.log("User from getter: ", userFromGetter, "User Id: ", +userId);
+const currentUser = computed(() => store.getCurrentUser(+userId));
+console.log("Current User: ", currentUser.value, "User Id: ", +userId);
 
 const input = ref("");
 
 const router = useRouter();
 
 const changeUsername = () => {
-  console.log("User Id: ", userId, "Input Value: ", input.value);
+  console.log(
+    "Attempting to update user: ",
+    "User Id: ",
+    userId,
+    "Input Value: ",
+    input.value
+  );
   store.updateUsername(+userId, input.value);
 };
-
-const users = ref(userData);
-const user = users.value.find((user) => user.id === +userId);
 
 const handleClick = (dayId: number) => {
   console.log("Clicked");

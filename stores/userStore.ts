@@ -1,27 +1,28 @@
 import { defineStore } from "pinia";
-import { userData } from "~/data/data";
+import type { UserType } from "~/types";
 
 export const useUserStore = defineStore(
   "userStore",
   () => {
-    // const users = ref(userData);
-    const users = ref([
-      { name: "Jack", id: 1 },
-      { name: "Jim", id: 2 },
-      { name: "Bill", id: 3 },
-    ]);
+    const users = ref([] as UserType[]);
 
     const getCurrentUser = (userId: number) => {
       return users.value.find((user) => user.id === userId);
+    };
+
+    const addUser = (newUser: UserType) => {
+      users.value.push(newUser);
     };
 
     const updateUsername = (userId: number, newName: string) => {
       const user = users.value.find((user) => user.id === userId);
       if (user) {
         user.name = newName;
+      } else {
+        console.error("User not found with ID:", userId);
       }
     };
-    return { users, getCurrentUser, updateUsername };
+    return { users, getCurrentUser, updateUsername, addUser };
   },
   {
     persist: true,
