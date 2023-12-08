@@ -11,12 +11,24 @@
                     <v-btn variant="tonal" class="text-overline text-blue">
                       2023/12/06
                     </v-btn>
-                    <ProfileButton :name="user?.name" :image="user?.image" />
+                    <ProfileButton
+                      :name="userFromStore.name"
+                      :image="user?.image"
+                    />
                   </div>
                 </div>
               </div>
-              <h1>{{ userFromStore.name }}</h1>
-              <h2>{{ userFromStore.id }}</h2>
+              <div>
+                <h1>{{ userFromStore.name }}</h1>
+                <h2>{{ userFromStore.id }}</h2>
+              </div>
+            </div>
+            <div>
+              <v-text-field
+                label="New Name"
+                v-model.number="input"
+              ></v-text-field>
+              <v-btn @click="changeUsername">Change</v-btn>
             </div>
           </v-card-item>
         </v-card>
@@ -32,10 +44,20 @@ import { userData } from "../../../data/data";
 import { useUserStore } from "../../../stores/userStore";
 const { userId } = useRoute().params;
 const store = useUserStore();
-const userFromStore = store.users[+userId - 1];
-console.log("User from store: ", userFromStore);
+const usersRef = storeToRefs(store);
+
+console.log("UsersRef: ", usersRef.users.value[+userId - 1]);
+
+const userFromStore = usersRef.users.value[+userId - 1];
+
+const input = ref("");
 
 const router = useRouter();
+
+const changeUsername = () => {
+  console.log("User Id: ", userId, "Input Value: ", input.value);
+  store.updateUsername(+userId, input.value);
+};
 
 const users = ref(userData);
 const user = users.value.find((user) => user.id === +userId);
