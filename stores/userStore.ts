@@ -8,6 +8,11 @@ export const useUserStore = defineStore({
       users: userData,
     };
   },
+  getters: {
+    nameAndId(state) {
+      return `${state.users[0].name} ${state.users[0].id}`;
+    },
+  },
   actions: {
     updateUsername(userId: number, newName: string) {
       const user = this.users.find((user) => user.id === userId);

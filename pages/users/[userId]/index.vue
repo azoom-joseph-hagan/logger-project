@@ -30,6 +30,9 @@
               ></v-text-field>
               <v-btn @click="changeUsername">Change</v-btn>
             </div>
+            <div>
+              <p>Name and Id: {{ store.nameAndId }}</p>
+            </div>
           </v-card-item>
         </v-card>
       </v-col>
