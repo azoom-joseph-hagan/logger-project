@@ -9,24 +9,28 @@
           label="Tracked Time"
           v-model.number="input"
         ></v-text-field>
-        <v-btn @click="handleSubmit(input)">Add</v-btn>
+        <v-btn @click="handleSubmit(+input)">Add</v-btn>
       </v-col>
     </v-row>
   </v-sheet>
 </template>
 
 <script lang="ts" setup>
-import { generateVuetifyColorFunction } from "../../util/randomColor";
 const props = defineProps<{
   model: number | null | undefined;
+  color: string;
   selected: string;
 }>();
 
 const input = ref("");
-const addProjectPercentage = inject("addProjectPercentage");
+const addProjectPercentage = inject<
+  (mins: number, project: string, color: string) => void
+>("addProjectPercentage");
 
 const handleSubmit = (percent: number) => {
-  addProjectPercentage(percent, props.selected, generateVuetifyColorFunction());
+  console.log("Selected: ", props.selected);
+  if (addProjectPercentage)
+    addProjectPercentage(percent, props.selected, `bg-${props.color}`);
   input.value = "";
 };
 </script>

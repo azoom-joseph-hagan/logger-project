@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <!-- <div v-if="loading">Loading...</div> -->
-    <!-- <div v-else> -->
     <v-row>
       <v-col>
         <v-card class="mx-auto" max-width="800" variant="elevated">
@@ -27,6 +25,12 @@
                   <p v-if="dailyTrackedData">
                     {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
                   </p>
+                  <div>
+                    <p class="text-red font-weight-bold" v-if="error">
+                      {{ error }}
+                      <v-btn @click="error = ''">OK</v-btn>
+                    </p>
+                  </div>
                 </div>
               </v-col>
               <v-col class="d-flex align-center flex-shrink-1" cols="2">
@@ -66,7 +70,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <!-- </div> -->
   </v-container>
 </template>
 
@@ -76,9 +79,13 @@ import { useRoute, useRouter } from "vue-router";
 import { formatTimeFromMinutes } from "../../../../../../../util/timeFunctions";
 const { userId, weekId, dayId } = useRoute().params;
 import { useUserStore } from "../../../../../../../stores/userStore";
+import { projects } from "../../../../../../../data/projects";
+import { randomArraySelection } from "../../../../../../../util/randomArraySelection";
 
 const week = +weekId - 1;
 const day = +dayId - 1;
+
+const error = ref("");
 
 const router = useRouter();
 const store = useUserStore();
@@ -86,23 +93,34 @@ const store = useUserStore();
 const dailyTrackedData = store.getCurrentDay(+userId, week, day);
 
 const addProjectPercentage = (mins: number, project: string, color: string) => {
-  if (!dailyTrackedData) {
+  if (!dailyTrackedData) return;
+  if (mins == 0) {
+    error.value = "Enter a number greater than 0";
     return;
   }
-  dailyTrackedData.totalTrackedTimeMins =
-    dailyTrackedData.totalTrackedTimeMins + mins;
-  const newPercent = +((mins / dailyTrackedData.totalLoggedTimeMins) * 100);
-  dailyTrackedData.percentageTrackedTime =
-    dailyTrackedData.percentageTrackedTime + newPercent;
+  if (
+    dailyTrackedData.totalTrackedTimeMins + mins >
+    dailyTrackedData.totalLoggedTimeMins
+  ) {
+    error.value =
+      "Project total exceeds time worked. Please remove some projects or add more tracked time";
+    return;
+  } else {
+    dailyTrackedData.totalTrackedTimeMins =
+      dailyTrackedData.totalTrackedTimeMins + mins;
+    const newPercent = +((mins / dailyTrackedData.totalLoggedTimeMins) * 100);
+    dailyTrackedData.percentageTrackedTime =
+      dailyTrackedData.percentageTrackedTime + newPercent;
 
-  const projectData = {
-    mins,
-    percent: newPercent,
-    project,
-    color,
-  };
+    const projectData = {
+      mins,
+      percent: newPercent,
+      project,
+      color,
+    };
 
-  store.pushProjectData(+userId, week, day, projectData);
+    store.pushProjectData(+userId, week, day, projectData);
+  }
 };
 
 const projectLoggedTime = computed(() =>
@@ -113,19 +131,11 @@ const projectTimeFormatted = computed(() =>
   formatTimeFromMinutes(dailyTrackedData!.totalTrackedTimeMins)
 );
 
-const recentProjects = ["PRJ1", "PRJ2", "PRJ5", "PRJ4", "PRJ9"];
-const allProjects = [
-  "PRJ1",
-  "PRJ2",
-  "PRJ3",
-  "PRJ4",
-  "PRJ5",
-  "PRJ6",
-  "PRJ7",
-  "PRJ8",
-  "PRJ9",
-  "PRJ10",
-];
+const allProjects = projects;
+const recentProjects: { name: string; color: string }[] = randomArraySelection(
+  projects,
+  5
+);
 
 const handleBack = () => {
   router.back();

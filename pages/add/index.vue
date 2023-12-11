@@ -1,13 +1,15 @@
 <template>
   <ClientOnly>
     <div>
-      <h2 class="pt-5">Add New User</h2>
-      <v-text-field label="New Name" v-model="nameRef"></v-text-field>
-      <v-text-field label="id" v-model.number="idRef"></v-text-field>
-      <v-btn @click="createUser">Add</v-btn>
-      <div v-for="user in users">
-        <p class="pa-2">{{ user.name }} {{ user.id }}</p>
-      </div>
+      <v-card max-width="600" class="mx-auto">
+        <h2 class="pt-5 mb-5">Add New User</h2>
+        <v-text-field label="New Name" v-model="nameRef"></v-text-field>
+        <v-text-field label="id" v-model.number="idRef"></v-text-field>
+        <v-btn color="success" block @click="createUser">Add</v-btn>
+        <div v-for="user in users">
+          <p class="pa-2">{{ user.name }} {{ user.id }}</p>
+        </div>
+      </v-card>
     </div>
   </ClientOnly>
 </template>
@@ -146,7 +148,6 @@ const createUser = () => {
       ],
     ],
   };
-  console.log("added user: ", userObject);
   store.addUser(userObject);
 };
 </script>

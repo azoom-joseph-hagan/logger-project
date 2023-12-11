@@ -10,31 +10,34 @@
     >
       <v-slide-group-item
         v-for="(project, index) in projectData"
-        :key="project"
+        :key="project.name"
         v-slot="{ isSelected, toggle, selectedClass }"
       >
         <v-card
-          :color="colors[index]"
+          :color="project.color"
           :class="['ma-2 my-5', selectedClass]"
           height="100"
           width="150"
           @click="toggle"
-          :title="project"
+          :title="project.name"
         >
         </v-card>
       </v-slide-group-item>
     </v-slide-group>
     <v-expand-transition>
-      <ProjectAddTime :model="model" :selected="projectData[model || 0]" />
+      <ProjectAddTime
+        :model="model"
+        :selected="projectData[model || 0].name"
+        :color="projectData[model || 0].color"
+      />
     </v-expand-transition>
   </v-sheet>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { colors } from "../../constants/colors";
 const props = defineProps<{
-  projectData: string[];
+  projectData: { name: string; color: string }[];
   title: string;
 }>();
 

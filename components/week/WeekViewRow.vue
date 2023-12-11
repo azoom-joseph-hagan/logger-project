@@ -10,7 +10,7 @@
         <v-icon
           size="x-large"
           color="success"
-          v-if="dayData.percentageTrackedTime === 100"
+          v-if="+dayData.percentageTrackedTime.toFixed(0) === 100"
           >mdi-check-circle</v-icon
         >
         <v-icon
