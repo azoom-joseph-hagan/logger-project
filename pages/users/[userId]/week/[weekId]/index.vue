@@ -28,7 +28,7 @@
                 <WeekViewRow
                   v-for="(day, index) in dayData"
                   :dayData="day"
-                  @button-clicked="handleClick(index + 1)"
+                  @button-clicked="handleClick(+index + 1)"
                 />
               </v-card>
             </div>
@@ -40,26 +40,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "../../../../../stores/userStore";
 const { userId, weekId } = useRoute().params;
 
 const router = useRouter();
 const store = useUserStore();
-const user = store.users[+userId - 1];
-const dayData = user.weekData[+weekId - 1];
+const user = store.getCurrentUser(+userId);
+const dayData = user && user.weekData[+weekId - 1];
 
 const handleClick = (dayId: number) => {
-  console.log("Clicked");
   router.push({ path: `/users/${userId}/week/${weekId}/day/${dayId}` });
 };
 
 const handleBack = () => {
-  console.log("BACK");
+  if (+weekId > 1) {
+    router.push({ path: `/users/${userId}/week/${+weekId - 1}/` });
+  }
 };
 
 const handleNext = () => {
-  console.log("NEXT");
+  if (user && +weekId < user.weekData.length) {
+    router.push({ path: `/users/${userId}/week/${+weekId + 1}/` });
+  }
 };
 </script>

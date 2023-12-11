@@ -1,10 +1,15 @@
 <template>
-  <div>
-    <h2 class="pt-5">Add New User</h2>
-    <v-text-field label="New Name" v-model="nameRef"></v-text-field>
-    <v-text-field label="id" v-model.number="idRef"></v-text-field>
-    <v-btn @click="createUser">Add</v-btn>
-  </div>
+  <ClientOnly>
+    <div>
+      <h2 class="pt-5">Add New User</h2>
+      <v-text-field label="New Name" v-model="nameRef"></v-text-field>
+      <v-text-field label="id" v-model.number="idRef"></v-text-field>
+      <v-btn @click="createUser">Add</v-btn>
+      <div v-for="user in users">
+        <p class="pa-2">{{ user.name }} {{ user.id }}</p>
+      </div>
+    </div>
+  </ClientOnly>
 </template>
 
 <script lang="ts" setup>
@@ -14,6 +19,8 @@ const store = useUserStore();
 
 const nameRef = ref("");
 const idRef = ref(null);
+
+const users = store.users;
 
 const createUser = () => {
   const userObject = {

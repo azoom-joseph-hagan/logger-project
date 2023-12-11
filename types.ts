@@ -2,7 +2,7 @@ export type UserType = {
   name: string;
   id: number;
   image: string;
-  weekData: WeekDataType[];
+  weekData: WeekDataType[][];
 };
 
 export type WeekDataType = {
@@ -18,5 +18,12 @@ export type TrackedProjectsType = {
   project: string;
   mins: number;
   percent: number;
+  color: string;
+};
+
+export type ProjectDayPercentageType = {
+  mins: number;
+  percent: number;
+  project: string;
   color: string;
 };

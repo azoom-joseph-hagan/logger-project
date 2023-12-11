@@ -1,5 +1,7 @@
 <template>
   <v-container>
+    <!-- <div v-if="loading">Loading...</div> -->
+    <!-- <div v-else> -->
     <v-row>
       <v-col>
         <v-card class="mx-auto" max-width="800" variant="elevated">
@@ -15,10 +17,16 @@
                 class="d-flex flex-grow-1 flex-shrink-0 align-center justify-center text-center"
               >
                 <div class="">
-                  <p>Day Id {{ dayId }}</p>
-                  <p>Total logged time: {{ projectLoggedTime }}</p>
-                  <p>Current allocated time: {{ projectTimeFormatted }}</p>
-                  <p>{{ dailyTrackedData.percentageTrackedTime }} %</p>
+                  <p>{{ dailyTrackedData?.day }}</p>
+                  <p v-if="dailyTrackedData">
+                    Total logged time: {{ projectLoggedTime }}
+                  </p>
+                  <p v-if="dailyTrackedData">
+                    Current allocated time: {{ projectTimeFormatted }}
+                  </p>
+                  <p v-if="dailyTrackedData">
+                    {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
+                  </p>
                 </div>
               </v-col>
               <v-col class="d-flex align-center flex-shrink-1" cols="2">
@@ -34,7 +42,9 @@
                   >
                     <template
                       class="d-flex flex-fill justify-start bg-green"
-                      v-for="(dayPercent, index) in projectDayPercentage"
+                      v-for="(
+                        dayPercent, index
+                      ) in dailyTrackedData?.trackedProjects"
                       :key="index"
                     >
                       <ProgressBarSection
@@ -56,56 +66,52 @@
         </v-card>
       </v-col>
     </v-row>
+    <!-- </div> -->
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { provide, ref, computed } from "vue";
+import { provide, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { trackedTimeData } from "../../../../../../../data/data";
 import { formatTimeFromMinutes } from "../../../../../../../util/timeFunctions";
 const { userId, weekId, dayId } = useRoute().params;
+import { useUserStore } from "../../../../../../../stores/userStore";
 
-console.log("user ID: ", userId, "Week Id: ", weekId, "Day Id: ", dayId);
+const week = +weekId - 1;
+const day = +dayId - 1;
 
 const router = useRouter();
+const store = useUserStore();
 
-type ProjectDayPercentageType = {
-  percent: number;
-  project: string;
-  color: string;
-};
-
-const dailyTrackedData = ref(trackedTimeData[+dayId - 1 || 0]);
-
-const projectDayPercentage = ref<ProjectDayPercentageType[]>([]);
+const dailyTrackedData = store.getCurrentDay(+userId, week, day);
 
 const addProjectPercentage = (mins: number, project: string, color: string) => {
-  console.log("Mins: ", mins, "Project: ", project, "Color: ", color);
-  dailyTrackedData.value.totalTrackedTimeMins =
-    dailyTrackedData.value.totalTrackedTimeMins + mins;
-  const newPercent = +(
-    (mins / dailyTrackedData.value.totalLoggedTimeMins) *
-    100
-  ).toFixed(2);
-  dailyTrackedData.value.percentageTrackedTime =
-    dailyTrackedData.value.percentageTrackedTime + newPercent;
-  console.log("New Percentage", newPercent);
+  if (!dailyTrackedData) {
+    return;
+  }
+  dailyTrackedData.totalTrackedTimeMins =
+    dailyTrackedData.totalTrackedTimeMins + mins;
+  const newPercent = +((mins / dailyTrackedData.totalLoggedTimeMins) * 100);
+  dailyTrackedData.percentageTrackedTime =
+    dailyTrackedData.percentageTrackedTime + newPercent;
 
-  projectDayPercentage.value.push({
-    percent: newPercent,
-    project,
-    color,
-  });
-  dailyTrackedData.value.trackedProjects.push({
-    project,
+  const projectData = {
     mins,
     percent: newPercent,
+    project,
     color,
-  });
+  };
 
-  console.log("Daily tracked data: ", dailyTrackedData);
+  store.pushProjectData(+userId, week, day, projectData);
 };
+
+const projectLoggedTime = computed(() =>
+  formatTimeFromMinutes(dailyTrackedData!.totalLoggedTimeMins)
+);
+
+const projectTimeFormatted = computed(() =>
+  formatTimeFromMinutes(dailyTrackedData!.totalTrackedTimeMins)
+);
 
 const recentProjects = ["PRJ1", "PRJ2", "PRJ5", "PRJ4", "PRJ9"];
 const allProjects = [
@@ -124,14 +130,6 @@ const allProjects = [
 const handleBack = () => {
   router.back();
 };
-
-const projectLoggedTime = formatTimeFromMinutes(
-  dailyTrackedData.value.totalLoggedTimeMins
-);
-
-const projectTimeFormatted = computed(() =>
-  formatTimeFromMinutes(dailyTrackedData.value.totalTrackedTimeMins)
-);
 
 provide("addProjectPercentage", addProjectPercentage);
 </script>

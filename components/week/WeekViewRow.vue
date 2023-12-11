@@ -4,13 +4,22 @@
       <p class="text-h6 font-weight-bold mx-2">{{ dayData.day }}</p>
       <p class="text-subtitle-2 mx-2">{{ dayData.date }}</p>
       <div class="flex-grow-1 d-flex justify-center align-center">
-        {{ dayData.percentageTrackedTime }}%
+        {{ dayData.percentageTrackedTime.toFixed(0) }}%
       </div>
       <div class="mx-2">
-        <v-icon size="x-large" v-if="dayData.percentageTrackedTime === 100"
+        <v-icon
+          size="x-large"
+          color="success"
+          v-if="dayData.percentageTrackedTime === 100"
           >mdi-check-circle</v-icon
         >
-        <v-icon size="x-large" v-else>mdi-close-circle</v-icon>
+        <v-icon
+          size="x-large"
+          color="grey"
+          v-else-if="dayData.totalLoggedTimeMins === 0"
+          >mdi-minus-circle</v-icon
+        >
+        <v-icon size="x-large" color="error" v-else>mdi-close-circle</v-icon>
       </div>
       <div class="mx-2">
         <v-btn
@@ -26,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { WeekDataType } from "~/stores/userStore";
+import type { WeekDataType } from "~/types";
 
 const props = defineProps<{ dayData: WeekDataType }>();
 </script>

@@ -12,24 +12,22 @@
                       2023/12/06
                     </v-btn>
                     <ProfileButton
-                      :name="userFromStore.name"
-                      :image="userFromStore.image"
+                      v-if="user"
+                      :name="user.name"
+                      :image="user.image"
                     />
                   </div>
                 </div>
               </div>
-              <div>
-                <h1>{{ userFromStore.name }}</h1>
-                <h2>{{ userFromStore.id }}</h2>
+              <div v-if="user">
+                <h1>{{ user.name }}</h1>
               </div>
             </div>
-            <div>
-              <v-text-field
-                label="New Name"
-                v-model.number="input"
-              ></v-text-field>
-              <v-btn @click="changeUsername">Change</v-btn>
-            </div>
+            <v-text-field
+              label="New Name"
+              v-model.number="input"
+            ></v-text-field>
+            <v-btn variant="outlined" @click="changeUsername">Change</v-btn>
           </v-card-item>
         </v-card>
       </v-col>
@@ -41,33 +39,14 @@
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "../../../stores/userStore";
-const { userId } = useRoute().params;
 const store = useUserStore();
-const usersRef = storeToRefs(store);
-
-const userFromStore = usersRef.users.value[+userId - 1];
-const userFromGetter = store.getCurrentUser(+userId);
-const currentUser = computed(() => store.getCurrentUser(+userId));
-console.log("Current User: ", currentUser.value, "User Id: ", +userId);
-
 const input = ref("");
 
-const router = useRouter();
+const { userId } = useRoute().params;
+const user = store.getCurrentUser(+userId);
 
 const changeUsername = () => {
-  console.log(
-    "Attempting to update user: ",
-    "User Id: ",
-    userId,
-    "Input Value: ",
-    input.value
-  );
   store.updateUsername(+userId, input.value);
-};
-
-const handleClick = (dayId: number) => {
-  console.log("Clicked");
-  router.push({ path: `/users/${userId}/week/${dayId}` });
 };
 
 const handleBack = () => {

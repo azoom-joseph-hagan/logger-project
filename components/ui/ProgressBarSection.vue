@@ -5,7 +5,7 @@
     :style="{ width: percentage + '%' }"
   >
     <p>{{ project }}</p>
-    <p>{{ percentage }}%</p>
+    <p>{{ percentage.toFixed(0) }}%</p>
   </div>
 </template>
 
