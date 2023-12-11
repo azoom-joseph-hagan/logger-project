@@ -1,11 +1,16 @@
 <template>
   <div
-    class="block d-flex flex-column align-center justify-center"
-    :class="barColor"
+    class="block d-flex align-center justify-center"
+    :class="`${barColor} ${compact ? 'flex-row' : 'flex-column'}`"
     :style="{ width: percentage + '%' }"
   >
-    <p>{{ project }}</p>
-    <p>{{ percentage.toFixed(0) }}%</p>
+    <p
+      :class="compact ? 'd-none d-sm-flex  text-sm-caption' : 'text-subtitle-1'"
+    >
+      {{ project }}
+    </p>
+    <p :style="{ height: '15px' }"></p>
+    <p :class="compact ? 'd-none' : 'd-flex'">{{ percentage.toFixed(0) }}%</p>
   </div>
 </template>
 
@@ -14,14 +19,11 @@ const props = defineProps<{
   percentage: number;
   barColor: string;
   project: string;
+  compact?: boolean;
 }>();
 </script>
 
 <style scoped>
-.position-relative {
-  position: relative;
-}
-
 .project-absolute {
   position: absolute;
   top: -20px;

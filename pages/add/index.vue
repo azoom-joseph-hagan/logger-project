@@ -20,7 +20,7 @@ import { useUserStore } from "../../stores/userStore";
 const store = useUserStore();
 
 const nameRef = ref("");
-const idRef = ref(null);
+const idRef = ref(store.users.length + 1);
 
 const users = store.users;
 
@@ -32,7 +32,7 @@ const createUser = () => {
     weekData: [
       [
         {
-          day: "Monday",
+          day: "月",
           date: "15-01-2023",
           totalLoggedTimeMins: 480,
           totalTrackedTimeMins: 0,
@@ -40,7 +40,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Tuesday",
+          day: "火",
           date: "16-01-2023",
           totalLoggedTimeMins: 450,
           totalTrackedTimeMins: 0,
@@ -48,7 +48,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Wednesday",
+          day: "水",
           date: "17-01-2023",
           totalLoggedTimeMins: 500,
           totalTrackedTimeMins: 0,
@@ -56,7 +56,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Thursday",
+          day: "木",
           date: "18-01-2023",
           totalLoggedTimeMins: 480,
           totalTrackedTimeMins: 0,
@@ -64,7 +64,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Friday",
+          day: "金",
           date: "19-01-2023",
           totalLoggedTimeMins: 390,
           totalTrackedTimeMins: 0,
@@ -72,7 +72,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Saturday",
+          day: "土",
           date: "20-01-2023",
           totalLoggedTimeMins: 0,
           totalTrackedTimeMins: 0,
@@ -80,7 +80,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Sunday",
+          day: "日",
           date: "21-01-2023",
           totalLoggedTimeMins: 0,
           totalTrackedTimeMins: 0,
@@ -90,7 +90,7 @@ const createUser = () => {
       ],
       [
         {
-          day: "Monday",
+          day: "月",
           date: "22-01-2023",
           totalLoggedTimeMins: 480,
           totalTrackedTimeMins: 0,
@@ -98,7 +98,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Tuesday",
+          day: "火",
           date: "23-01-2023",
           totalLoggedTimeMins: 450,
           totalTrackedTimeMins: 0,
@@ -106,7 +106,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Wednesday",
+          day: "水",
           date: "24-01-2023",
           totalLoggedTimeMins: 500,
           totalTrackedTimeMins: 0,
@@ -114,7 +114,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Thursday",
+          day: "木",
           date: "25-01-2023",
           totalLoggedTimeMins: 480,
           totalTrackedTimeMins: 0,
@@ -122,7 +122,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Friday",
+          day: "金",
           date: "26-01-2023",
           totalLoggedTimeMins: 390,
           totalTrackedTimeMins: 0,
@@ -130,7 +130,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Saturday",
+          day: "土",
           date: "27-01-2023",
           totalLoggedTimeMins: 0,
           totalTrackedTimeMins: 0,
@@ -138,7 +138,7 @@ const createUser = () => {
           trackedProjects: [],
         },
         {
-          day: "Sunday",
+          day: "日",
           date: "28-01-2023",
           totalLoggedTimeMins: 0,
           totalTrackedTimeMins: 0,

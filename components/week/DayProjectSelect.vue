@@ -15,12 +15,12 @@
       >
         <v-card
           :color="project.color"
-          :class="['ma-2 my-5', selectedClass]"
-          height="100"
-          width="150"
+          :class="['ma-1 my-2 size-class', selectedClass]"
           @click="toggle"
           :title="project.name"
         >
+          <!--          height="100"
+          width="150" -->
         </v-card>
       </v-slide-group-item>
     </v-slide-group>
@@ -49,5 +49,33 @@ const model = ref(null);
   border-width: 2px;
   border-style: solid;
   border-color: black;
+}
+
+@media (min-width: 576px) {
+  .size-class {
+    width: 100;
+    height: 50;
+  }
+}
+
+@media (min-width: 768px) {
+  .size-class {
+    width: 150px;
+    height: 75px;
+  }
+}
+
+@media (min-width: 992px) {
+  .size-class {
+    width: 200px;
+    height: 100px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .size-class {
+    width: 250px;
+    height: 125px;
+  }
 }
 </style>
