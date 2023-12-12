@@ -3,7 +3,7 @@
     icon="mdi-chevron-right"
     :color="color || 'black'"
     :variant="variant || 'outlined'"
-    size="large"
+    size="small"
     @click="handleNext"
   ></v-btn>
 </template>

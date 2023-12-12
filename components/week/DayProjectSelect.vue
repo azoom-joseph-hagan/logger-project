@@ -1,11 +1,11 @@
 <template>
-  <v-sheet class="mx-auto" max-width="800">
-    <h4 class="pl-10">{{ title }}</h4>
+  <v-sheet class="mx-auto mb-5 justify-center" max-width="800">
+    <h4 class="pl-2">{{ title }}</h4>
     <v-slide-group
       v-model="model"
-      class="pa-4"
+      class="pa-1"
       center-active
-      selected-class="bg-white elevation-9 selected"
+      selected-class="bg-white elevation-3 selected"
       show-arrows
     >
       <v-slide-group-item
@@ -19,8 +19,6 @@
           @click="toggle"
           :title="project.name"
         >
-          <!--          height="100"
-          width="150" -->
         </v-card>
       </v-slide-group-item>
     </v-slide-group>
@@ -29,6 +27,7 @@
         :model="model"
         :selected="projectData[model || 0].name"
         :color="projectData[model || 0].color"
+        @blur="handleBlur"
       />
     </v-expand-transition>
   </v-sheet>
@@ -42,6 +41,10 @@ const props = defineProps<{
 }>();
 
 const model = ref(null);
+
+const handleBlur = () => {
+  console.log("Blurred");
+};
 </script>
 
 <style scoped>
@@ -49,16 +52,17 @@ const model = ref(null);
   border-width: 2px;
   border-style: solid;
   border-color: black;
+  /* background-color: white; */
 }
 
-@media (min-width: 576px) {
+@media (min-width: 500px) {
   .size-class {
     width: 100;
     height: 50;
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 600px) {
   .size-class {
     width: 150px;
     height: 75px;

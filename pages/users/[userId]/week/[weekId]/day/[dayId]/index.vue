@@ -1,76 +1,67 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <v-card class="mx-auto" max-width="800" variant="elevated">
-          <v-card-item>
-            <v-row
-              no-gutters
-              class="d-flex flex-shrink-1 flex-grow-0 justify-space-between align-center"
+  <v-row class="my-1">
+    <v-col class="">
+      <div class="button-pos">
+        <BackButton :handleBack="handleBack" />
+      </div>
+      <v-row no-gutters class="d-flex justify-space-between align-center">
+        <v-col
+          class="d-flex flex-grow-1 flex-shrink-0 align-center justify-center text-center"
+        >
+          <div>
+            <span class="text-h5">
+              {{ dailyTrackedData?.day }}
+            </span>
+            <span class="text-h6 ml-2 text-grey-darken-1"
+              >({{ dailyTrackedData?.date }})</span
             >
-              <v-col cols="2" class="d-flex align-center justify-start">
-                <BackButton :handleBack="handleBack" />
-              </v-col>
-              <v-col
-                class="d-flex flex-grow-1 flex-shrink-0 align-center justify-center text-center"
-              >
-                <div class="">
-                  <p>{{ dailyTrackedData?.day }}</p>
-                  <p v-if="dailyTrackedData">
-                    Total logged time: {{ projectLoggedTime }}
-                  </p>
-                  <p v-if="dailyTrackedData">
-                    Current allocated time: {{ projectTimeFormatted }}
-                  </p>
-                  <p v-if="dailyTrackedData">
-                    {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
-                  </p>
-                  <div>
-                    <p class="text-red font-weight-bold" v-if="error">
-                      {{ error }}
-                      <v-btn @click="error = ''">OK</v-btn>
-                    </p>
-                  </div>
-                </div>
-              </v-col>
-              <v-col class="d-flex align-center flex-shrink-1" cols="2">
-                <div></div>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-card>
-                  <v-sheet
-                    class="flex-fill d-flex ma-1 pa-1 text-center"
-                    style="height: 60px"
-                  >
-                    <template
-                      class="d-flex flex-fill justify-start bg-green"
-                      v-for="(
-                        dayPercent, index
-                      ) in dailyTrackedData?.trackedProjects"
-                      :key="index"
-                    >
-                      <ProgressBarSection
-                        :percentage="dayPercent.percent"
-                        :barColor="dayPercent.color"
-                        :project="dayPercent.project"
-                      />
-                    </template>
-                  </v-sheet>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-item>
-          <DayProjectSelect
-            title="Recent Projects: "
-            :projectData="recentProjects"
-          />
-          <DayProjectSelect title="All Projects: " :projectData="allProjects" />
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+            <p class="mt-2" v-if="dailyTrackedData">
+              Total logged time: {{ projectLoggedTime }}
+            </p>
+            <p v-if="dailyTrackedData">
+              Current allocated time: {{ projectTimeFormatted }}
+            </p>
+            <p class="text-h6 mt-3" v-if="dailyTrackedData">
+              {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
+            </p>
+            <div>
+              <p class="text-red font-weight-bold" v-if="error">
+                {{ error }}
+                <v-btn @click="error = ''">OK</v-btn>
+              </p>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+      <v-divider class="border-opacity-25 mx-auto my-4" inset></v-divider>
+      <v-row>
+        <v-col class="wrapper">
+          <div
+            v-if="recordsExist"
+            class="flex-fill d-flex ma-1 pa-1 text-center"
+            style="height: 60px"
+          >
+            <template
+              class="d-flex flex-fill justify-start"
+              v-for="(dayPercent, index) in dailyTrackedData?.trackedProjects"
+              :key="index"
+            >
+              <ProgressBarSection
+                :percentage="dayPercent.percent"
+                :barColor="dayPercent.color"
+                :project="dayPercent.project"
+              />
+            </template>
+          </div>
+        </v-col>
+      </v-row>
+      <DayProjectSelect
+        title="Recent Projects: "
+        :projectData="recentProjects"
+      />
+      <DayProjectSelect title="All Projects: " :projectData="allProjects" />
+    </v-col>
+  </v-row>
 </template>
 
 <script setup lang="ts">
@@ -91,6 +82,10 @@ const router = useRouter();
 const store = useUserStore();
 
 const dailyTrackedData = store.getCurrentDay(+userId, week, day);
+
+const recordsExist = computed(
+  () => dailyTrackedData && dailyTrackedData?.trackedProjects.length > 0
+);
 
 const addProjectPercentage = (mins: number, project: string, color: string) => {
   if (!dailyTrackedData) return;
@@ -143,3 +138,15 @@ const handleBack = () => {
 
 provide("addProjectPercentage", addProjectPercentage);
 </script>
+
+<style scoped>
+.button-pos {
+  position: absolute;
+  top: 60px;
+  left: 10px;
+}
+.wrapper {
+  max-width: 800px;
+  margin: auto;
+}
+</style>

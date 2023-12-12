@@ -1,17 +1,63 @@
 <template>
-  <v-btn variant="tonal" class="ml-2">
-    <div class="d-flex font-weight-bold text-overline align-center">
-      <p class="mr-2">
-        {{ name }}
-      </p>
+  <v-menu>
+    <template v-slot:activator="{ props }">
+      <v-btn variant="tonal" class="ml-2" v-bind="props">
+        <div class="d-flex font-weight-bold text-overline align-center">
+          <p class="mr-2">
+            {{ name }}
+          </p>
 
-      <v-avatar size="small">
-        <v-img v-if="image" alt="Avatar" :src="image"></v-img
-      ></v-avatar>
-    </div>
-  </v-btn>
+          <v-avatar size="small">
+            <v-img v-if="image" alt="Avatar" :src="image"></v-img
+          ></v-avatar>
+        </div>
+      </v-btn>
+    </template>
+    <v-list>
+      <v-list-item
+        v-for="(user, index) in users"
+        :key="index"
+        :value="user.name"
+        @click="handleSelect(user.id)"
+      >
+        <v-list-item-title>{{ user.name }}</v-list-item-title>
+      </v-list-item>
+    </v-list>
+    <!-- <v-autocomplete
+      :items="users"
+      label="Select an user"
+      item-title="name"
+      item-value="id"
+    ></v-autocomplete> -->
+  </v-menu>
 </template>
 
 <script lang="ts" setup>
+import { useUserStore } from "../../stores/userStore";
+import { useRoute, useRouter } from "vue-router";
+
 const props = defineProps(["name", "image"]);
+const router = useRouter();
+const route = useRoute();
+
+const store = useUserStore();
+const users = store.getAllUsers();
+
+function replaceUserIdInRoute(newUserId: number) {
+  const pathSegments = route.path.split("/");
+
+  const usersIndex = pathSegments.findIndex((segment) => segment === "users");
+  if (usersIndex !== -1 && pathSegments.length > usersIndex + 1) {
+    pathSegments[usersIndex + 1] = newUserId.toString();
+  }
+
+  const newPath = pathSegments.join("/");
+
+  router.push(newPath);
+}
+
+const handleSelect = (id: number) => {
+  store.setCurrentUser(id);
+  replaceUserIdInRoute(id);
+};
 </script>

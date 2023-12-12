@@ -32,6 +32,11 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-btn @click="handleGoToSummary">Go to Weekly Summary</v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -39,21 +44,18 @@
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "../../../stores/userStore";
+const router = useRouter();
 const store = useUserStore();
 const input = ref("");
 
 const { userId } = useRoute().params;
-const user = store.getCurrentUser(+userId);
+const user = store.getUserFromId(+userId);
 
 const changeUsername = () => {
   store.updateUsername(+userId, input.value);
 };
 
-const handleBack = () => {
-  console.log("BACK");
-};
-
-const handleNext = () => {
-  console.log("NEXT");
+const handleGoToSummary = () => {
+  router.push(`/users/${userId}/week/1`);
 };
 </script>

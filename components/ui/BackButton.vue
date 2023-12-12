@@ -3,7 +3,7 @@
     icon="mdi-chevron-left"
     :color="color || 'grey'"
     :variant="variant || 'tonal'"
-    size="large"
+    size="small"
     @click="handleBack"
   />
 </template>

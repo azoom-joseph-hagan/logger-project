@@ -5,13 +5,27 @@ export const useUserStore = defineStore(
   "userStore",
   () => {
     const users = ref<UserType[]>([]);
+    const currentUser = ref<UserType | null>(null);
 
-    const getCurrentUser = (userId: number) => {
+    const getUserFromId = (userId: number) => {
       return users.value.find((user) => user.id === userId);
     };
 
+    const setCurrentUser = (id: number) => {
+      const current = getUserFromId(id);
+      currentUser.value = current;
+    };
+
+    const getCurrentUser = () => {
+      return currentUser.value;
+    };
+
+    const getAllUsers = () => {
+      return users.value;
+    };
+
     const getCurrentDay = (userId: number, weekId: number, dayId: number) => {
-      const user = getCurrentUser(userId);
+      const user = getUserFromId(userId);
       const week = user?.weekData[weekId];
       const day = week && week[dayId];
       return day;
@@ -41,7 +55,11 @@ export const useUserStore = defineStore(
     };
     return {
       users,
+      currentUser,
+      setCurrentUser,
       getCurrentUser,
+      getUserFromId,
+      getAllUsers,
       updateUsername,
       addUser,
       getCurrentDay,
