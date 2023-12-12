@@ -21,7 +21,6 @@
   "dependencies": {
     "@mdi/font": "^7.3.67",
     "@pinia/nuxt": "^0.5.1",
-    "@supabase/supabase-js": "^2.39.0",
     "@vueuse/core": "^10.7.0",
     "apexcharts": "^3.44.1",
     "pinia": "^2.1.7",

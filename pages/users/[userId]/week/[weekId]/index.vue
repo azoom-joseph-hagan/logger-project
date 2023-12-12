@@ -1,14 +1,14 @@
 <template>
   <v-row>
-    <v-col>
+    <v-col v-if="dayData">
       <v-card-item>
         <div>
           <div class="d-flex justify-center align-center py-4">
             <div class="d-flex flex-column justify-center align-center">
               <div class="d-flex">
-                <v-btn variant="tonal" class="text-overline mb-2 text-blue">
-                  2023/12/06
-                </v-btn>
+                <CalendarButton
+                  :text="`${dayData[0].date} - ${dayData[6].date}`"
+                />
                 <ProfileButton :name="user?.name" :image="user?.image" />
               </div>
               <v-row class="mt-2 d-flex">
@@ -18,7 +18,7 @@
                   :handleBack="handleBack"
                   :disabled="!canGoBack"
                 />
-                <div class="text-h5 text-center font-weight-bold mb-5 mx-3">
+                <div class="text-h6 text-center font-weight-bold mb-5 mx-3">
                   今週の時間登録
                 </div>
                 <NextButton
