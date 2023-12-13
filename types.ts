@@ -27,3 +27,11 @@ export type ProjectDayPercentageType = {
   project: string;
   color: string;
 };
+
+export type TempDailyDataType = {
+  date: string;
+  day: string;
+  percentageTrackedTime: number;
+  totalLoggedTimeMins: number;
+  totalTrackedTimeMins: number;
+};
