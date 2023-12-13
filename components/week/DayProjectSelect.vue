@@ -27,7 +27,6 @@
         :model="model"
         :selected="projectData[model || 0].name"
         :color="projectData[model || 0].color"
-        @blur="handleBlur"
       />
     </v-expand-transition>
   </v-sheet>
@@ -41,10 +40,6 @@ const props = defineProps<{
 }>();
 
 const model = ref(null);
-
-const handleBlur = () => {
-  console.log("Blurred");
-};
 </script>
 
 <style scoped>

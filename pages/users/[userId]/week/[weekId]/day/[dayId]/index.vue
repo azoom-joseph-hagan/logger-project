@@ -57,11 +57,16 @@
           </div>
         </v-col>
       </v-row>
-      <DayProjectSelect
+      <!-- <DayProjectSelect
         title="Recent Projects: "
         :projectData="recentProjects"
+      /> -->
+      <!-- <DayProjectSelect title="All Projects: " :projectData="allProjects" /> -->
+      <AllProjectAutocomplete
+        :projectData="allProjects"
+        :recentProjects="recentProjects"
+        :addProjectPercentage="addProjectPercentage"
       />
-      <DayProjectSelect title="All Projects: " :projectData="allProjects" />
     </v-col>
   </v-row>
 </template>
