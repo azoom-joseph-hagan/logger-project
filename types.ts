@@ -5,6 +5,22 @@ export type UserType = {
   weekData: WeekDataType[][];
 };
 
+export type NewUserType = {
+  name: string;
+  id: number;
+  image: string;
+  projectData: NewWeekDataType[];
+};
+
+export type NewWeekDataType = {
+  date: string;
+  day: string;
+  totalLoggedTimeMins: number;
+  totalTrackedTimeMins: number;
+  percentageTrackedTime: number;
+  trackedProjects: TrackedProjectsType[];
+};
+
 export type WeekDataType = {
   day: string;
   date: string;

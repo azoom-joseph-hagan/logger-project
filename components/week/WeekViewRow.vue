@@ -52,7 +52,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { WeekDataType } from "~/types";
+import type { NewWeekDataType } from "~/types";
 
-const props = defineProps<{ dayData: WeekDataType }>();
+const props = defineProps<{ dayData: NewWeekDataType }>();
+console.log("Props in WeekViewRow ", props.dayData);
 </script>

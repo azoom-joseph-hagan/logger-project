@@ -13,7 +13,7 @@
 
       <v-list>
         <v-list-item>
-          <v-date-picker v-model="date"></v-date-picker>
+          <v-date-picker @input="onDateSelected" hide-header> </v-date-picker>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -21,11 +21,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-const props = defineProps(["text"]);
+import { ref, defineEmits } from "vue";
+const props = defineProps(["text", "model"]);
+const date = ref(null);
+
+const emit = defineEmits(["dateSelected"]);
+
+const onDateSelected = (selectedDate) => {
+  emit("dateSelected", selectedDate);
+};
 
 const menu = ref(false);
-const date = ref(null);
 </script>
 
 <style></style>
