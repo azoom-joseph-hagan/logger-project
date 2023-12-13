@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="mx-auto mb-5 justify-center" max-width="800">
+  <v-sheet class="mx-auto mb-5 mt-10 justify-center" max-width="800">
     <h4 class="pl-2">{{ title }}</h4>
     <v-slide-group
       v-model="model"

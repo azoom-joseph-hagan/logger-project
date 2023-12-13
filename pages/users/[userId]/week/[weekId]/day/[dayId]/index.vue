@@ -25,9 +25,11 @@
               {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
             </p>
             <div>
-              <p class="text-red font-weight-bold" v-if="error">
+              <p class="text-red font-weight-bold text-body-2" v-if="error">
                 {{ error }}
-                <v-btn @click="error = ''">OK</v-btn>
+                <v-btn variant="outlined" color="red" @click="error = ''"
+                  >OK</v-btn
+                >
               </p>
             </div>
           </div>
@@ -39,7 +41,6 @@
           <div
             v-if="recordsExist"
             class="flex-fill d-flex ma-1 pa-1 text-center"
-            style="height: 60px"
           >
             <template
               class="d-flex flex-fill justify-start"
@@ -50,6 +51,7 @@
                 :percentage="dayPercent.percent"
                 :barColor="dayPercent.color"
                 :project="dayPercent.project"
+                @delete-section="deleteProjectSection"
               />
             </template>
           </div>
@@ -68,11 +70,11 @@
 import { provide, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { formatTimeFromMinutes } from "../../../../../../../util/timeFunctions";
-const { userId, weekId, dayId } = useRoute().params;
 import { useUserStore } from "../../../../../../../stores/userStore";
 import { projects } from "../../../../../../../data/projects";
 import { randomArraySelection } from "../../../../../../../util/randomArraySelection";
 
+const { userId, weekId, dayId } = useRoute().params;
 const week = +weekId - 1;
 const day = +dayId - 1;
 
@@ -83,33 +85,37 @@ const store = useUserStore();
 
 const dailyTrackedData = store.getCurrentDay(+userId, week, day);
 
+const dailyTotalMinutes = computed(() =>
+  store.getDailyTotalMins(+userId, week, day)
+);
+const dailyTrackedMinutes = computed(() =>
+  store.getDailyTrackedMins(+userId, week, day)
+);
+
 const recordsExist = computed(
   () => dailyTrackedData && dailyTrackedData?.trackedProjects.length > 0
 );
 
 const addProjectPercentage = (mins: number, project: string, color: string) => {
-  if (!dailyTrackedData) return;
+  if (!dailyTrackedData || !dailyTotalMinutes) {
+    console.log("Missing variable");
+    console.log("Daily data: ", dailyTrackedData);
+    console.log("Daily total mins: ", dailyTotalMinutes);
+    console.log("Daily tracked mins: ", dailyTrackedMinutes);
+    return;
+  }
+
   if (mins == 0) {
     error.value = "Enter a number greater than 0";
     return;
   }
-  if (
-    dailyTrackedData.totalTrackedTimeMins + mins >
-    dailyTrackedData.totalLoggedTimeMins
-  ) {
+  if (dailyTrackedMinutes.value! + mins > dailyTotalMinutes.value!) {
     error.value =
       "Project total exceeds time worked. Please remove some projects or add more tracked time";
     return;
   } else {
-    dailyTrackedData.totalTrackedTimeMins =
-      dailyTrackedData.totalTrackedTimeMins + mins;
-    const newPercent = +((mins / dailyTrackedData.totalLoggedTimeMins) * 100);
-    dailyTrackedData.percentageTrackedTime =
-      dailyTrackedData.percentageTrackedTime + newPercent;
-
     const projectData = {
       mins,
-      percent: newPercent,
       project,
       color,
     };
@@ -118,12 +124,16 @@ const addProjectPercentage = (mins: number, project: string, color: string) => {
   }
 };
 
+const deleteProjectSection = (projectName: string) => {
+  store.deleteProjectData(+userId, week, day, projectName);
+};
+
 const projectLoggedTime = computed(() =>
-  formatTimeFromMinutes(dailyTrackedData!.totalLoggedTimeMins)
+  formatTimeFromMinutes(dailyTotalMinutes.value!)
 );
 
 const projectTimeFormatted = computed(() =>
-  formatTimeFromMinutes(dailyTrackedData!.totalTrackedTimeMins)
+  formatTimeFromMinutes(dailyTrackedMinutes.value!)
 );
 
 const allProjects = projects;

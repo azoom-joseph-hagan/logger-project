@@ -23,7 +23,7 @@ export type TrackedProjectsType = {
 
 export type ProjectDayPercentageType = {
   mins: number;
-  percent: number;
+  // percent: number;
   project: string;
   color: string;
 };

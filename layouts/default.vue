@@ -9,12 +9,6 @@
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/projects" router exact>
-          <v-list-item-action>
-            <v-icon>mdi-collage</v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Projects</v-list-item-title>
-        </v-list-item>
         <v-list-item to="/users/1" router exact>
           <v-list-item-action>
             <v-icon>mdi-account</v-icon>

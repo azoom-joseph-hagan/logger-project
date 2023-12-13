@@ -9,8 +9,20 @@
     >
       {{ project }}
     </p>
-    <p :style="{ height: '15px' }"></p>
-    <p :class="compact ? 'd-none' : 'd-flex'">{{ percentage.toFixed(0) }}%</p>
+    <div class="d-flex align-center">
+      <p :style="{ height: '15px' }"></p>
+      <p class="mx-2" :class="compact ? 'd-none' : 'd-flex'">
+        {{ percentage.toFixed(0) }}%
+      </p>
+      <v-btn
+        :class="compact ? 'd-none' : 'd-flex'"
+        size="small"
+        density="compact"
+        variant="plain"
+        icon="mdi-delete-circle-outline"
+        @click="$emit('delete-section', project)"
+      ></v-btn>
+    </div>
   </div>
 </template>
 
@@ -24,10 +36,10 @@ const props = defineProps<{
 </script>
 
 <style scoped>
-.project-absolute {
+/* .project-absolute {
   position: absolute;
   top: -20px;
   left: 50%;
   transform: translateX(-50%);
-}
+} */
 </style>
