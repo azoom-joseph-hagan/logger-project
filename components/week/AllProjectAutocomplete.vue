@@ -82,10 +82,9 @@ const handleSubmit = (input: number) => {
 
 <style scoped>
 .selected {
-  border-width: 2px;
+  border-width: 3px;
   border-style: solid;
   border-color: black;
-  background-color: white !important;
 }
 
 @media (min-width: 500px) {

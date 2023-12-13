@@ -1,5 +1,18 @@
 <template>
   <div>
+    <div class="d-flex justify-center pl-2 pt-2">
+      <v-btn-toggle
+        v-model="toggle"
+        color="primary"
+        mandatory
+        rounded="100"
+        variant="text"
+        density="compact"
+      >
+        <v-btn density="compact">週</v-btn>
+        <v-btn density="compact">月</v-btn>
+      </v-btn-toggle>
+    </div>
     <div class="d-flex justify-space-between align-center px-5 py-10">
       <BackButton
         variant="outlined"
@@ -23,6 +36,9 @@
 import type { WeekDataType } from "~/types";
 import { useUserStore } from "../stores/userStore";
 import { createWeekLaterDate } from "~/util/createWeekLaterDate";
+
+const toggle = ref(0);
+
 const store = useUserStore();
 
 const user = computed(() => store.getCurrentUser());
