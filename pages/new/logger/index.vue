@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../../stores/userStoreNew";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import {
   getWeeklyData,
   getWeekRange,
@@ -102,6 +102,10 @@ watch(selected, (newValue) => {
   weekRange.value = getWeekRange(formattedDate.value);
   dayData.value = getWeeklyData(user.value.projectData, formattedDate.value);
   store.setLastUsedDate(formattedDate.value);
+});
+
+onMounted(() => {
+  dayData.value = getWeeklyData(user.value.projectData, formattedDate.value);
 });
 
 const handleClick = (dayId: string) => {
