@@ -4,11 +4,10 @@
       <v-btn variant="tonal" class="ml-2" v-bind="props">
         <div class="d-flex font-weight-bold text-overline align-center">
           <p class="mr-2">
-            {{ name }}
+            {{ user?.name }}
           </p>
-
           <v-avatar size="small">
-            <v-img v-if="image" alt="Avatar" :src="image"></v-img
+            <v-img v-if="user?.image" alt="Avatar" :src="user.image"></v-img
           ></v-avatar>
         </div>
       </v-btn>
@@ -33,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from "../../stores/userStore";
+import { useUserStore } from "../../stores/userStoreNew";
 import { useRoute, useRouter } from "vue-router";
 
 const props = defineProps(["name", "image"]);
@@ -42,22 +41,9 @@ const route = useRoute();
 
 const store = useUserStore();
 const users = store.getAllUsers();
-
-function replaceUserIdInRoute(newUserId: number) {
-  const pathSegments = route.path.split("/");
-
-  const usersIndex = pathSegments.findIndex((segment) => segment === "users");
-  if (usersIndex !== -1 && pathSegments.length > usersIndex + 1) {
-    pathSegments[usersIndex + 1] = newUserId.toString();
-  }
-
-  const newPath = pathSegments.join("/");
-
-  router.push(newPath);
-}
+const user = computed(() => store.getCurrentUser());
 
 const handleSelect = (id: number) => {
   store.setCurrentUser(id);
-  replaceUserIdInRoute(id);
 };
 </script>

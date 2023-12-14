@@ -1,12 +1,18 @@
 import { defineStore } from "pinia";
-import type { NewUserType, ProjectDayPercentageType } from "~/types";
+import {
+  TimePeriod,
+  type NewUserType,
+  type ProjectDayPercentageType,
+} from "~/types";
 
 export const useUserStore = defineStore(
   "userStoreNew",
   () => {
     // state
     const users = ref<NewUserType[]>([]);
+    const test = ref("TEST");
     const currentUser = ref<NewUserType | null>(null);
+    const viewMode = ref<TimePeriod | null>(null);
 
     //user data
     const getUserFromId = (userId: number) => {
@@ -42,30 +48,20 @@ export const useUserStore = defineStore(
     };
 
     //day data
-    const getCurrentDay = (userId: number, weekId: number, dayId: number) => {
-      // const user = getUserFromId(userId);
-      // const week = user?.projectData[weekId];
-      // const day = week && week[dayId];
-      // return day;
+    const getCurrentDay = (userId: number, date: string) => {
+      const user = getUserFromId(userId);
+      return user?.projectData.find((day) => day.date === date);
     };
 
-    const getDailyTotalMins = (
-      userId: number,
-      weekId: number,
-      dayId: number
-    ) => {
-      const day = getCurrentDay(userId, weekId, dayId);
+    const getDailyTotalMins = (userId: number, date: string) => {
+      const day = getCurrentDay(userId, date);
       if (day) {
         return day.totalLoggedTimeMins;
       }
     };
 
-    const getDailyTrackedMins = (
-      userId: number,
-      weekId: number,
-      dayId: number
-    ) => {
-      const day = getCurrentDay(userId, weekId, dayId);
+    const getDailyTrackedMins = (userId: number, date: string) => {
+      const day = getCurrentDay(userId, date);
       if (day) {
         return day.totalTrackedTimeMins;
       }
@@ -74,11 +70,10 @@ export const useUserStore = defineStore(
     // project data
     const pushProjectData = (
       userId: number,
-      weekId: number,
-      dayId: number,
+      date: string,
       projectData: ProjectDayPercentageType
     ) => {
-      const day = getCurrentDay(userId, weekId, dayId);
+      const day = getCurrentDay(userId, date);
 
       if (day) {
         day.totalTrackedTimeMins = day.totalTrackedTimeMins + projectData.mins;
@@ -107,11 +102,10 @@ export const useUserStore = defineStore(
 
     const deleteProjectData = (
       userId: number,
-      weekId: number,
-      dayId: number,
+      date: string,
       projectName: string
     ) => {
-      const day = getCurrentDay(userId, weekId, dayId);
+      const day = getCurrentDay(userId, date);
       if (!day) {
         console.log("Day not found");
         return;
@@ -130,6 +124,15 @@ export const useUserStore = defineStore(
       }
     };
 
+    // view mode
+    const getViewMode = () => {
+      return viewMode.value;
+    };
+
+    const updateViewMode = (newMode: TimePeriod) => {
+      viewMode.value = newMode;
+    };
+
     return {
       users,
       currentUser,
@@ -144,6 +147,8 @@ export const useUserStore = defineStore(
       getDailyTrackedMins,
       pushProjectData,
       deleteProjectData,
+      getViewMode,
+      updateViewMode,
     };
   },
   {

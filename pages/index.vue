@@ -1,30 +1,20 @@
 <template>
   <div>
     <div class="d-flex justify-center pl-2 pt-2">
-      <v-btn-toggle
-        v-model="toggle"
-        color="primary"
-        mandatory
-        rounded="100"
-        variant="text"
-        density="compact"
-      >
-        <v-btn density="compact">週</v-btn>
-        <v-btn density="compact">月</v-btn>
-      </v-btn-toggle>
+      <WeekMonthToggleBtn />
     </div>
-    <div class="d-flex justify-space-between align-center px-5 py-10">
-      <BackButton
-        variant="outlined"
-        color="black"
-        :handleBack="handleBack"
-        :disabled="!canGoBack"
-      />
-      <div class="d-flex flex-column">
+    <div class="d-flex justify-center flex-column align-center px-5 py-10">
+      <div class="d-flex">
+        <CalendarButton
+          :formattedDate="formattedDate"
+          @date-selected="dateSelected"
+        />
         <ProfileButton :name="user?.name" :image="user?.image" />
-        <p class="py-2">{{ dateTitle }} - {{ dateEndTitle }}</p>
       </div>
-      <NextButton :handleNext="handleNext" :disabled="!canGoForward" />
+      <p class="py-2">
+        {{ weekRange?.firstDayOfWeek }} - {{ weekRange?.lastDayOfWeek }}
+      </p>
+      <p>{{ viewMode }}</p>
     </div>
     <div class="chart mx-auto">
       <apexchart type="donut" :options="options" :series="series"></apexchart>
@@ -33,59 +23,87 @@
 </template>
 
 <script setup lang="ts">
-import type { WeekDataType } from "~/types";
-import { useUserStore } from "../stores/userStore";
-import { createWeekLaterDate } from "~/util/createWeekLaterDate";
-
-const toggle = ref(0);
+import { TimePeriod, type NewWeekDataType } from "~/types";
+import { useUserStore } from "../stores/userStoreNew";
+import {
+  formatDate,
+  getMonthlyData,
+  getWeekRange,
+  getWeeklyData,
+} from "~/util/dateRanges";
 
 const store = useUserStore();
 
+const selected = ref<Date | null>(null);
+const formattedDate = ref(formatDate(new Date()));
+
 const user = computed(() => store.getCurrentUser());
+const viewMode = computed(() => store.getViewMode());
 
-const weekNumber = ref(0);
+const displayData = ref<NewdisplayDataType[]>(
+  getWeeklyData(user.value.projectData, formattedDate.value)
+);
 
-function aggregateProjectMinutes(weekData: WeekDataType[]) {
-  return weekData.map((week) => {
-    const projectTotals = {};
-    const weekStartDate = week[0].date; // Assuming the first day of the week represents the week's date
+const getTimePeriodData = (dayData, timePeriod: TimePeriod) => {
+  console.log("getTimePeriod", dayData, timePeriod);
+  if (timePeriod === TimePeriod.Week) {
+    return getWeeklyData(user.value.projectData, formattedDate.value);
+  } else {
+    return getMonthlyData(user.value.projectData, formattedDate.value);
+  }
+};
+const TEST = getTimePeriodData(displayData, viewMode.value);
 
-    week.forEach((day) => {
-      day.trackedProjects.forEach((project) => {
-        if (!projectTotals[project.project]) {
-          projectTotals[project.project] = 0;
-        }
-        projectTotals[project.project] += project.mins;
-      });
+const weekRange = ref<{ firstDayOfWeek: string; lastDayOfWeek: string } | null>(
+  getWeekRange(formattedDate.value)
+);
+
+const dateSelected = (selectedDate: Date) => {
+  selected.value = formatDate(selectedDate);
+};
+
+watch(user, (newUser, oldUser) => {
+  displayData.value = getWeeklyData(
+    user.value.projectData,
+    formattedDate.value
+  );
+});
+
+watch(selected, (newValue) => {
+  formattedDate.value = formatDate(newValue!);
+  weekRange.value = getWeekRange(formattedDate.value);
+  displayData.value = getWeeklyData(
+    user.value.projectData,
+    formattedDate.value
+  );
+});
+
+function aggregateProjectMinutes(weekData) {
+  const projectTotals = {};
+
+  weekData.forEach((day) => {
+    day.trackedProjects.forEach((project) => {
+      if (!projectTotals[project.project]) {
+        projectTotals[project.project] = { mins: 0, color: project.color };
+      }
+      projectTotals[project.project].mins += project.mins;
     });
-
-    const projects = Object.entries(projectTotals).map(([name, value]) => ({
-      name,
-      value,
-    }));
-
-    return { date: weekStartDate, projects };
   });
+
+  const projects = Object.entries(projectTotals).map(([name, data]) => ({
+    name,
+    value: data.mins,
+    color: data.color,
+  }));
+  return projects;
 }
 
-const weeklyProjectMinutes = computed(() =>
-  aggregateProjectMinutes(user.value.weekData)
-);
+const projectMinutes = computed(() => {
+  return aggregateProjectMinutes(displayData.value);
+});
 
-const dateTitle = computed(
-  () => weeklyProjectMinutes.value[weekNumber.value].date
-);
-
-const dateEndTitle = computed(() => createWeekLaterDate(dateTitle.value));
-
-const labels = computed(() =>
-  weeklyProjectMinutes.value[weekNumber.value].projects.map((item) => item.name)
-);
-const values = computed(() =>
-  weeklyProjectMinutes.value[weekNumber.value].projects.map(
-    (item) => item.value
-  )
-);
+const labels = computed(() => projectMinutes.value.map((item) => item.name));
+const values = computed(() => projectMinutes.value.map((item) => item.value));
 
 const series = ref(values);
 const options = ref({
@@ -94,23 +112,6 @@ const options = ref({
     position: "bottom",
   },
 });
-
-const canGoBack = computed(() => weekNumber.value > 0);
-const canGoForward = computed(
-  () =>
-    weeklyProjectMinutes &&
-    weekNumber.value < weeklyProjectMinutes.value.length - 1
-);
-
-const handleBack = () => {
-  if (canGoBack.value) weekNumber.value = weekNumber.value - 1;
-};
-
-const handleNext = () => {
-  if (canGoForward.value) {
-    weekNumber.value = weekNumber.value + 1;
-  }
-};
 </script>
 
 <style>

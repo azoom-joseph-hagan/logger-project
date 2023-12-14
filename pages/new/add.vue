@@ -33,9 +33,9 @@ const createUser = () => {
       {
         date: "2022-12-15",
         day: "木",
-        totalLoggedTimeMins: 0,
-        totalTrackedTimeMins: 0,
         percentageTrackedTime: 0,
+        totalLoggedTimeMins: 500,
+        totalTrackedTimeMins: 0,
         trackedProjects: [],
       },
       {

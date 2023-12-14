@@ -55,5 +55,4 @@
 import type { NewWeekDataType } from "~/types";
 
 const props = defineProps<{ dayData: NewWeekDataType }>();
-console.log("Props in WeekViewRow ", props.dayData);
 </script>

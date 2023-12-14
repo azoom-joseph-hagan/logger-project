@@ -51,3 +51,8 @@ export type TempDailyDataType = {
   totalLoggedTimeMins: number;
   totalTrackedTimeMins: number;
 };
+
+export enum TimePeriod {
+  Week = 0,
+  Month = 1,
+}
