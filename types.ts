@@ -35,6 +35,7 @@ export type TrackedProjectsType = {
   mins: number;
   percent: number;
   color: string;
+  trueColor: string;
 };
 
 export type ProjectDayPercentageType = {
@@ -42,6 +43,7 @@ export type ProjectDayPercentageType = {
   // percent: number;
   project: string;
   color: string;
+  trueColor: string;
 };
 
 export type TempDailyDataType = {

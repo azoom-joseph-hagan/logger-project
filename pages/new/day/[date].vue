@@ -108,7 +108,12 @@ const recordsExist = computed(
   () => dailyTrackedData && dailyTrackedData.value.trackedProjects.length > 0
 );
 
-const addProjectPercentage = (mins: number, project: string, color: string) => {
+const addProjectPercentage = (
+  mins: number,
+  project: string,
+  color: string,
+  trueColor: string
+) => {
   if (!dailyTrackedData || !dailyTotalMinutes) {
     console.log("Missing variable");
     return;
@@ -123,6 +128,7 @@ const addProjectPercentage = (mins: number, project: string, color: string) => {
       mins,
       project,
       color,
+      trueColor,
     };
 
     store.pushProjectData(user.value.id, date, projectData);

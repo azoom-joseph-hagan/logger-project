@@ -61,11 +61,18 @@
 
 <script lang="ts" setup>
 const textInput = ref("");
-const model = ref<{ name: string; color: string } | null>(null);
+const model = ref<{ name: string; color: string; trueColor: string } | null>(
+  null
+);
 const props = defineProps<{
-  projectData: { name: string; color: string }[];
-  recentProjects: { name: string; color: string }[];
-  addProjectPercentage: (mins: number, project: string, color: string) => void;
+  projectData: { name: string; color: string; trueColor: string }[];
+  recentProjects: { name: string; color: string; trueColor: string }[];
+  addProjectPercentage: (
+    mins: number,
+    project: string,
+    color: string,
+    trueColor: string
+  ) => void;
 }>();
 
 const emit = defineEmits(["setError"]);
@@ -90,7 +97,8 @@ const handleSubmit = (input: number) => {
       props.addProjectPercentage(
         input,
         model.value.name,
-        `bg-${model.value.color}`
+        `bg-${model.value.color}`,
+        model.value.trueColor
       );
     }
   }

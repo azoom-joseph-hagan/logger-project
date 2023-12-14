@@ -209,6 +209,7 @@ const createUser = () => {
     ],
   };
   store.addUser(userObject);
+  // store.setCurrentUser(userObject); // in case of reset
   store.setCurrentUser(idRef.value);
   nameRef.value = "";
 };

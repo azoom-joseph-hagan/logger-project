@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-menu :close-on-content-click="false">
+    <v-menu :close-on-content-click="false" v-model="menuOpen">
       <template v-slot:activator="{ props }">
         <v-btn
           variant="tonal"
@@ -23,6 +23,11 @@
 import { ref, defineEmits, watch } from "vue";
 const props = defineProps(["formattedDate"]);
 const date = ref(null);
+const menuOpen = ref(false);
+
+watch(date, (oldVal) => {
+  menuOpen.value = false;
+});
 
 const emit = defineEmits(["dateSelected"]);
 

@@ -46,7 +46,6 @@
       <div v-if="chartToggle">
         <apexchart
           type="bar"
-          height="350"
           :options="options"
           :series="barSeries"
         ></apexchart>
@@ -74,7 +73,7 @@ const store = useUserStore();
 
 const selected = ref<Date | null>(null);
 const formattedDate = ref(formatDate(new Date()));
-const chartToggle = ref(false);
+const chartToggle = ref(true);
 
 const user = computed(() => store.getCurrentUser());
 const viewMode = computed(() => store.getViewMode());
@@ -126,7 +125,11 @@ function aggregateProjectMinutes(weekData) {
   weekData.forEach((day) => {
     day.trackedProjects.forEach((project) => {
       if (!projectTotals[project.project]) {
-        projectTotals[project.project] = { mins: 0, color: project.color };
+        projectTotals[project.project] = {
+          mins: 0,
+          color: project.color,
+          trueColor: project.trueColor,
+        };
       }
       projectTotals[project.project].mins += project.mins;
     });
@@ -136,6 +139,7 @@ function aggregateProjectMinutes(weekData) {
     name,
     value: data.mins,
     color: data.color,
+    trueColor: data.trueColor,
   }));
   return projects;
 }
@@ -146,6 +150,9 @@ const projectMinutes = computed(() => {
 
 const labels = computed(() => projectMinutes.value.map((item) => item.name));
 const values = computed(() => projectMinutes.value.map((item) => item.value));
+const seriesColors = computed(() =>
+  projectMinutes.value.map((item) => item.trueColor)
+);
 
 const series = ref(values);
 const barSeries = computed(() => [
@@ -155,12 +162,31 @@ const barSeries = computed(() => [
   },
 ]);
 
-const options = ref({
+const options = computed(() => ({
   labels: labels.value,
   legend: {
     position: "bottom",
   },
-});
+  chart: {
+    toolbar: {
+      show: false,
+    },
+  },
+  colors: seriesColors.value,
+  plotOptions: {
+    bar: {
+      distributed: true,
+    },
+  },
+  dataLabels: {
+    style: {
+      colors: ["#2f2f30"],
+    },
+    dropShadow: {
+      enabled: false,
+    },
+  },
+}));
 
 const handleNext = () => {
   if (viewMode.value === TimePeriod.Week) {
@@ -181,7 +207,7 @@ const handlePrevious = () => {
 
 <style>
 .chart {
-  width: 350px;
+  width: 360px;
 }
 @media (min-width: 450px) {
   .chart {
