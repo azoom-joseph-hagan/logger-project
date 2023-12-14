@@ -83,7 +83,7 @@ const store = useUserStore();
 
 const selected = ref<Date | null>(null);
 
-const formattedDate = ref(formatDate(new Date()));
+const formattedDate = ref(store.getLastUsedDate() || formatDate(new Date()));
 const user = computed(() => store.getCurrentUser());
 
 const dayData = ref<NewWeekDataType[]>(
@@ -101,9 +101,11 @@ watch(selected, (newValue) => {
   formattedDate.value = formatDate(newValue!);
   weekRange.value = getWeekRange(formattedDate.value);
   dayData.value = getWeeklyData(user.value.projectData, formattedDate.value);
+  store.setLastUsedDate(formattedDate.value);
 });
 
 const handleClick = (dayId: string) => {
+  store.setLastUsedDate(dayId);
   router.push({ path: `/new/day/${dayId}` });
 };
 

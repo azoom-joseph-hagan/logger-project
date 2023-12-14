@@ -12,6 +12,7 @@ export const useUserStore = defineStore(
     const users = ref<NewUserType[]>([]);
     const currentUser = ref<NewUserType | null>(null);
     const viewMode = ref<TimePeriod>(TimePeriod.Week);
+    const lastUsedDate = ref("");
 
     //user data
     const getUserFromId = (userId: number) => {
@@ -137,10 +138,20 @@ export const useUserStore = defineStore(
       viewMode.value = newMode;
     };
 
+    //date
+    const getLastUsedDate = () => {
+      return lastUsedDate.value;
+    };
+
+    const setLastUsedDate = (date: string) => {
+      lastUsedDate.value = date;
+    };
+
     return {
       users,
       currentUser,
       viewMode,
+      lastUsedDate,
       setCurrentUser,
       getCurrentUser,
       getUserFromId,
@@ -152,9 +163,10 @@ export const useUserStore = defineStore(
       getDailyTrackedMins,
       pushProjectData,
       deleteProjectData,
-
       getViewMode,
       updateViewMode,
+      getLastUsedDate,
+      setLastUsedDate,
     };
   },
   {

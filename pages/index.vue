@@ -72,7 +72,7 @@ import {
 const store = useUserStore();
 
 const selected = ref<Date | null>(null);
-const formattedDate = ref(formatDate(new Date()));
+const formattedDate = ref(store.getLastUsedDate() || formatDate(new Date()));
 const chartToggle = ref(true);
 
 const user = computed(() => store.getCurrentUser());
@@ -117,6 +117,7 @@ watch(selected, (newValue) => {
   formattedDate.value = formatDate(newValue!);
   weekRange.value = getWeekRange(formattedDate.value);
   displayData.value = getTimePeriodData(user.value.projectData, viewMode.value);
+  store.setLastUsedDate(formattedDate.value);
 });
 
 function aggregateProjectMinutes(weekData) {
