@@ -9,7 +9,7 @@
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/users/1" router exact>
+        <v-list-item to="/new/add" router exact>
           <v-list-item-action>
             <v-icon>mdi-account</v-icon>
           </v-list-item-action>

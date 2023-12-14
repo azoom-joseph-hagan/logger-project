@@ -12,13 +12,34 @@
         <ProfileButton :name="user?.name" :image="user?.image" />
       </div>
       <p class="py-2">
-        {{ weekRange?.firstDayOfWeek }} - {{ weekRange?.lastDayOfWeek }}
+        <div v-if="viewMode === TimePeriod.Week">
+          {{ weekRange?.firstDayOfWeek }} - {{ weekRange?.lastDayOfWeek }}
+        </div>
+        <div v-else>
+          {{ formattedDate.substring(0, 7) }}
+        </div>
       </p>
-      <p>{{ viewMode }}</p>
     </div>
-    <div class="chart mx-auto">
+    <div class="d-flex justify-end">
+      <v-btn-toggle
+      v-model="chartToggle"
+      color="primary"
+      mandatory
+      rounded="100"
+      variant="tonal"
+      density="compact"
+      >
+      <v-btn density="comfortable" icon="mdi-chart-pie"></v-btn>
+      <v-btn density="comfortable" icon="mdi-chart-bar"></v-btn>
+    </v-btn-toggle>
+  </div>
+  <div id="chart" v-if="chartToggle">
+        <apexchart type="bar" height="350" :options="options" :series="barSeries"></apexchart>
+      </div>
+    <div class="chart mx-auto" v-else>
       <apexchart type="donut" :options="options" :series="series"></apexchart>
     </div>
+
   </div>
 </template>
 
@@ -36,23 +57,29 @@ const store = useUserStore();
 
 const selected = ref<Date | null>(null);
 const formattedDate = ref(formatDate(new Date()));
+const chartToggle = ref(false)
 
 const user = computed(() => store.getCurrentUser());
 const viewMode = computed(() => store.getViewMode());
 
-const displayData = ref<NewdisplayDataType[]>(
-  getWeeklyData(user.value.projectData, formattedDate.value)
-);
-
 const getTimePeriodData = (dayData, timePeriod: TimePeriod) => {
-  console.log("getTimePeriod", dayData, timePeriod);
+  // console.log("getTimePeriod", dayData, timePeriod);
   if (timePeriod === TimePeriod.Week) {
     return getWeeklyData(user.value.projectData, formattedDate.value);
   } else {
     return getMonthlyData(user.value.projectData, formattedDate.value);
   }
 };
-const TEST = getTimePeriodData(displayData, viewMode.value);
+
+const displayData = ref<NewdisplayDataType[]>(
+  getTimePeriodData(user.value.projectData, viewMode.value)
+);
+
+watch(viewMode, (oldValue) => {
+  displayData.value = getTimePeriodData(displayData.value, viewMode.value);
+});
+
+
 
 const weekRange = ref<{ firstDayOfWeek: string; lastDayOfWeek: string } | null>(
   getWeekRange(formattedDate.value)
@@ -63,18 +90,19 @@ const dateSelected = (selectedDate: Date) => {
 };
 
 watch(user, (newUser, oldUser) => {
-  displayData.value = getWeeklyData(
-    user.value.projectData,
-    formattedDate.value
-  );
+  displayData.value = getTimePeriodData(user.value?.projectData, viewMode.value)
+  // getWeeklyData(
+  //   user.value.projectData,
+  //   formattedDate.value
+  // );
 });
 
 watch(selected, (newValue) => {
   formattedDate.value = formatDate(newValue!);
   weekRange.value = getWeekRange(formattedDate.value);
-  displayData.value = getWeeklyData(
+  displayData.value = getTimePeriodData(
     user.value.projectData,
-    formattedDate.value
+    viewMode.value
   );
 });
 
@@ -106,6 +134,10 @@ const labels = computed(() => projectMinutes.value.map((item) => item.name));
 const values = computed(() => projectMinutes.value.map((item) => item.value));
 
 const series = ref(values);
+const barSeries = computed(() =>[{
+            name: 'Time',
+            data: values.value
+          }])
 const options = ref({
   labels: labels.value,
   legend: {
