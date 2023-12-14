@@ -1,8 +1,8 @@
 <template>
   <v-btn
     icon="mdi-chevron-left"
-    :color="color || 'grey'"
-    :variant="variant || 'tonal'"
+    :color="color || 'black'"
+    :variant="variant || 'outlined'"
     size="small"
     @click="handleBack"
   />

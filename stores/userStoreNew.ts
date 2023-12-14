@@ -10,14 +10,18 @@ export const useUserStore = defineStore(
   () => {
     // state
     const users = ref<NewUserType[]>([]);
-    const test = ref("TEST");
     const currentUser = ref<NewUserType | null>(null);
-    const viewMode = ref<TimePeriod | null>(null);
+    const viewMode = ref<TimePeriod>(TimePeriod.Week);
 
     //user data
     const getUserFromId = (userId: number) => {
       return users.value.find((user) => user.id === userId);
     };
+
+    // IN CASE OF RESET
+    // const setCurrentUser = (user: number) => {
+    //   currentUser.value = user;
+    // };
 
     const setCurrentUser = (id: number) => {
       const current = getUserFromId(id);
@@ -136,6 +140,7 @@ export const useUserStore = defineStore(
     return {
       users,
       currentUser,
+      viewMode,
       setCurrentUser,
       getCurrentUser,
       getUserFromId,
@@ -147,6 +152,7 @@ export const useUserStore = defineStore(
       getDailyTrackedMins,
       pushProjectData,
       deleteProjectData,
+
       getViewMode,
       updateViewMode,
     };

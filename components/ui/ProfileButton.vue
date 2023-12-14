@@ -33,11 +33,6 @@
 
 <script lang="ts" setup>
 import { useUserStore } from "../../stores/userStoreNew";
-import { useRoute, useRouter } from "vue-router";
-
-const props = defineProps(["name", "image"]);
-const router = useRouter();
-const route = useRoute();
 
 const store = useUserStore();
 const users = store.getAllUsers();

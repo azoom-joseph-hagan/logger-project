@@ -1,24 +1,35 @@
 <template>
   <v-row class="my-1">
     <v-col class="">
-      <div class="button-pos">
-        <BackButton :handleBack="handleBack" />
-      </div>
       <v-row no-gutters class="d-flex justify-space-between align-center">
         <v-col
-          class="d-flex flex-grow-1 flex-shrink-0 align-center justify-center text-center"
+          class="d-flex flex-grow-1 flex-shrink-0 align-center justify-center text-center ga-2"
         >
           <div>
-            <span class="text-h5">
-              {{ dailyTrackedData?.day }}
-            </span>
-            <span class="text-h6 ml-2 text-grey-darken-1">({{ date }})</span>
-            <p class="mt-2" v-if="dailyTrackedData">
-              Total logged time: {{ projectLoggedTime }}
-            </p>
-            <p v-if="dailyTrackedData">
-              Current allocated time: {{ projectTimeFormatted }}
-            </p>
+            <div class="d-flex align-center justify-center align-center mb-4">
+              <BackButton
+                class="floatingBtn"
+                :handleBack="handleBack"
+                variant="text"
+              />
+              <div class="d-flex flex-md-row align-center">
+                <span class="text-h5">
+                  {{ dailyTrackedData?.day }}
+                </span>
+                <span class="text-md-h6 ml-2 text-grey-darken-1"
+                  >({{ date }})</span
+                >
+              </div>
+            </div>
+            <ProfileButton />
+            <div class="mt-4" v-if="dailyTrackedData">
+              <p class="text-subtitle-1">Total logged time:</p>
+              <p class="text-h5">{{ projectLoggedTime }}</p>
+            </div>
+            <div class="mt-4" v-if="dailyTrackedData">
+              <p class="text-subtitle-1">Current allocated time:</p>
+              <p class="text-h5">{{ projectTimeFormatted }}</p>
+            </div>
             <p class="text-h6 mt-3" v-if="dailyTrackedData">
               {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
             </p>
@@ -59,6 +70,7 @@
         :projectData="allProjects"
         :recentProjects="recentProjects"
         :addProjectPercentage="addProjectPercentage"
+        @set-error="setError"
       />
     </v-col>
   </v-row>
@@ -79,19 +91,21 @@ const store = useUserStore();
 const date = route.params.date;
 const error = ref("");
 
-const user = store.getCurrentUser();
-const dailyTrackedData = store.getCurrentDay(user.id, date);
+const user = computed(() => store.getCurrentUser());
+const dailyTrackedData = computed(() =>
+  store.getCurrentDay(user.value.id, date)
+);
 
 const dailyTotalMinutes = computed(() =>
-  store.getDailyTotalMins(user.id, date)
+  store.getDailyTotalMins(user.value.id, date)
 );
 
 const dailyTrackedMinutes = computed(() =>
-  store.getDailyTrackedMins(user.id, date)
+  store.getDailyTrackedMins(user.value.id, date)
 );
 
 const recordsExist = computed(
-  () => dailyTrackedData && dailyTrackedData?.trackedProjects.length > 0
+  () => dailyTrackedData && dailyTrackedData.value.trackedProjects.length > 0
 );
 
 const addProjectPercentage = (mins: number, project: string, color: string) => {
@@ -100,10 +114,6 @@ const addProjectPercentage = (mins: number, project: string, color: string) => {
     return;
   }
 
-  if (mins == 0) {
-    error.value = "Enter a number greater than 0";
-    return;
-  }
   if (dailyTrackedMinutes.value! + mins > dailyTotalMinutes.value!) {
     error.value =
       "Project total exceeds time worked. Please remove some projects or add more tracked time";
@@ -115,12 +125,16 @@ const addProjectPercentage = (mins: number, project: string, color: string) => {
       color,
     };
 
-    store.pushProjectData(user.id, date, projectData);
+    store.pushProjectData(user.value.id, date, projectData);
   }
 };
 
+const setError = (errorMsg: string) => {
+  error.value = errorMsg;
+};
+
 const deleteProjectSection = (projectName: string) => {
-  store.deleteProjectData(user.id, date, projectName);
+  store.deleteProjectData(user.value.id, date, projectName);
 };
 
 const projectLoggedTime = computed(() =>
@@ -145,11 +159,6 @@ provide("addProjectPercentage", addProjectPercentage);
 </script>
 
 <style scoped>
-.button-pos {
-  position: absolute;
-  top: 60px;
-  left: 10px;
-}
 .wrapper {
   max-width: 800px;
   margin: auto;

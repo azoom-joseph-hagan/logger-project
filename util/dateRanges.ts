@@ -7,6 +7,54 @@ export function formatDate(dateString: Date) {
   return `${year}-${month}-${day}`;
 }
 
+export const adjustDateByWeek = (
+  dateString: string,
+  direction: "forward" | "backward"
+) => {
+  // Parse the date string
+  const parts: string[] = dateString.split("-");
+  const year: number = parseInt(parts[0]);
+  const month: number = parseInt(parts[1]) - 1; // Month is 0-indexed in JavaScript Date
+  const day: number = parseInt(parts[2]);
+  const date: Date = new Date(year, month, day);
+
+  // Add or subtract 7 days based on direction
+  const dayAdjustment = direction === "forward" ? 7 : -7;
+  date.setDate(date.getDate() + dayAdjustment);
+
+  // Format the new date in YYYY-MM-DD format
+  const newDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+
+  return newDate;
+};
+
+export const adjustToMonthBoundary = (
+  dateString: string,
+  direction: "forward" | "backward"
+): string => {
+  const parts: string[] = dateString.split("-");
+  const year: number = parseInt(parts[0]);
+  const month: number = parseInt(parts[1]) - 1; // Month is 0-indexed in JavaScript Date
+  const date: Date = new Date(year, month);
+
+  if (direction === "forward") {
+    // Set to first day of the next month
+    date.setMonth(date.getMonth() + 1, 1);
+  } else {
+    // Set to the last day of the previous month
+    date.setDate(0);
+  }
+
+  // Format the new date in YYYY-MM-DD format
+  const newDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+
+  return newDate;
+};
+
 export function getWeekRange(date) {
   const currentDate = new Date(date);
   // Adjust for local time zone

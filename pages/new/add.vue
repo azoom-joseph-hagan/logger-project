@@ -15,12 +15,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useUserStore } from "../../stores/userStoreNew";
 const store = useUserStore();
 
 const nameRef = ref("");
-const idRef = ref(store.users.length + 1);
+const idRef = computed(() => store.users.length + 1);
 
 const users = store.users;
 
@@ -210,6 +210,7 @@ const createUser = () => {
   };
   store.addUser(userObject);
   store.setCurrentUser(idRef.value);
+  nameRef.value = "";
 };
 </script>
 

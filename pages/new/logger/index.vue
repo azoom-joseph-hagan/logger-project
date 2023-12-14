@@ -6,34 +6,23 @@
           <div class="d-flex justify-center align-center py-4">
             <div class="d-flex flex-column justify-center align-center">
               <div class="d-flex">
-                <!-- <v-menu :close-on-content-click="false">
-                  <template v-slot:activator="{ props }">
-                    <v-btn
-                      variant="tonal"
-                      v-bind="props"
-                      class="text-overline mb-2 text-blue"
-                    >
-                      {{ formattedDate }}
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-date-picker v-model="selected" hide-header>
-                      </v-date-picker>
-                    </v-list-item>
-                  </v-list>
-                </v-menu> -->
                 <CalendarButton
                   :formattedDate="formattedDate"
                   @date-selected="dateSelected"
                 />
                 <ProfileButton :name="user?.name" :image="user?.image" />
               </div>
-              <v-row class="mt-2 d-flex">
-                <div class="text-h6 text-center font-weight-bold mb-5 mx-3">
-                  {{ weekRange?.firstDayOfWeek }} -
-                  {{ weekRange?.lastDayOfWeek }}
+              <v-row class="mt-2">
+                <BackButton :handleBack="handlePrevious" />
+                <div
+                  class="text-subtitle-2 text-md-h5 text-center font-weight-bold mb-5 mx-3 my-2"
+                >
+                  <p class="inline-block">
+                    {{ weekRange?.firstDayOfWeek }} -
+                    {{ weekRange?.lastDayOfWeek }}
+                  </p>
                 </div>
+                <NextButton :handleNext="handleNext" />
               </v-row>
             </div>
           </div>
@@ -63,6 +52,7 @@ import {
   getWeeklyData,
   getWeekRange,
   formatDate,
+  adjustDateByWeek,
 } from "../../../util/dateRanges";
 
 type NewUserType = {
@@ -115,7 +105,14 @@ watch(selected, (newValue) => {
 
 const handleClick = (dayId: string) => {
   router.push({ path: `/new/day/${dayId}` });
-  console.log("Clicked");
+};
+
+const handleNext = () => {
+  selected.value = adjustDateByWeek(formattedDate.value, "forward");
+};
+
+const handlePrevious = () => {
+  selected.value = adjustDateByWeek(formattedDate.value, "backward");
 };
 
 const dateSelected = (selectedDate: Date) => {

@@ -3,9 +3,9 @@
     <h3 class="my-2">Recent Projects:</h3>
     <v-slide-group
       v-model="model"
-      class="pa-1"
+      class="pa-0 pa-sm-1"
       center-active
-      selected-class="bg-white elevation-3 selected"
+      selected-class="elevation-3 selected"
       show-arrows
     >
       <v-slide-group-item
@@ -39,16 +39,16 @@
         variant="outlined"
       ></v-autocomplete>
       <v-form
-        class="d-flex align-center mt-2"
+        class="d-flex align-center mt-3"
         @submit.prevent="handleSubmit(+textInput)"
       >
         <v-text-field
           class="flex-grow-1 mr-2"
           clearable
           label="Tracked Time"
-          v-model.number="textInput"
+          v-model="textInput"
           density="comfortable"
-          hide-details
+          hint="Enter a number in minutes"
           variant="outlined"
         ></v-text-field>
         <v-btn color="success" variant="flat" @click="handleSubmit(+textInput)"
@@ -68,17 +68,51 @@ const props = defineProps<{
   addProjectPercentage: (mins: number, project: string, color: string) => void;
 }>();
 
+const emit = defineEmits(["setError"]);
+
 const handleSubmit = (input: number) => {
-  if (model.value) {
-    props.addProjectPercentage(
-      input,
-      model.value.name,
-      `bg-${model.value.color}`
-    );
+  if (!model.value) {
+    emit("setError", "Please select a project");
+    textInput.value = "";
+    return;
+  }
+  if (isNaN(input)) {
+    emit("setError", "Please enter a number");
+    textInput.value = "";
+    return;
+  }
+  if (input == 0) {
+    emit("setError", "Enter a number greater than 0");
+    textInput.value = "";
+    return;
+  } else {
+    if (model.value) {
+      props.addProjectPercentage(
+        input,
+        model.value.name,
+        `bg-${model.value.color}`
+      );
+    }
   }
   textInput.value = "";
 };
 </script>
+
+<style>
+/* MOBILE ONLY */
+@media (max-width: 500px) {
+  .v-slide-group__prev {
+    display: none !important;
+  }
+  .v-slide-group__next {
+    display: none !important;
+  }
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+</style>
 
 <style scoped>
 .selected {
