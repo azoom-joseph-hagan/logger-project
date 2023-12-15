@@ -1,5 +1,5 @@
 export function randomArraySelection(
-  arr: { name: string; color: string }[],
+  arr: { name: string; color: string; trueColor: string }[],
   count: number
 ) {
   let shuffledArray = [...arr];

@@ -34,12 +34,3 @@ const props = defineProps<{
   compact?: boolean;
 }>();
 </script>
-
-<style scoped>
-/* .project-absolute {
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-} */
-</style>

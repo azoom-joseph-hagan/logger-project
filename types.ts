@@ -1,11 +1,11 @@
-export type NewUserType = {
+export type UserType = {
   name: string;
   id: number;
   image: string;
-  projectData: NewWeekDataType[];
+  projectData: WeekDataType[];
 };
 
-export type NewWeekDataType = {
+export type WeekDataType = {
   date: string;
   day: string;
   totalLoggedTimeMins: number;
@@ -29,15 +29,14 @@ export type ProjectDayPercentageType = {
   trueColor: string;
 };
 
-export type TempDailyDataType = {
-  date: string;
-  day: string;
-  percentageTrackedTime: number;
-  totalLoggedTimeMins: number;
-  totalTrackedTimeMins: number;
-};
-
 export enum TimePeriod {
   Week = 0,
   Month = 1,
 }
+
+export type ProjectMinutesType = {
+  name: string;
+  value: any;
+  color: any;
+  trueColor: any;
+}[];

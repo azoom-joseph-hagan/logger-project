@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { NewUserType } from "~/types";
+import type { UserType } from "~/types";
 import { useUserStore } from "../../stores/userStore";
 
 const store = useUserStore();
@@ -46,12 +46,13 @@ const users = store.getAllUsers();
 const user = computed(() => store.getCurrentUser());
 
 const menuOpen = ref(false);
-const model = ref<NewUserType | null>(null);
+const model = ref<UserType | null>(null);
 
-watch(model, (oldVal) => {
+watch(model, async () => {
   if (model.value) {
     menuOpen.value = false;
     store.setCurrentUser(model.value.id);
+    nextTick();
   }
 });
 </script>

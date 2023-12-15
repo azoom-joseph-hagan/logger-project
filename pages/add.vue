@@ -214,6 +214,3 @@ const createUser = () => {
   nameRef.value = "";
 };
 </script>
-
-<style></style>
-../stores/userStore

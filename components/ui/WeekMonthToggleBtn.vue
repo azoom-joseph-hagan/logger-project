@@ -22,6 +22,3 @@ watch(toggle, (oldValue) => {
   store.updateViewMode(toggle.value);
 });
 </script>
-
-<style></style>
-../../stores/userStore

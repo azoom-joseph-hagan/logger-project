@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import {
   TimePeriod,
-  type NewUserType,
+  type UserType,
   type ProjectDayPercentageType,
 } from "~/types";
 
@@ -9,8 +9,8 @@ export const useUserStore = defineStore(
   "userStoreNew",
   () => {
     // state
-    const users = ref<NewUserType[]>([]);
-    const currentUser = ref<NewUserType | null>(null);
+    const users = ref<UserType[]>([]);
+    const currentUser = ref<UserType | null>(null);
     const viewMode = ref<TimePeriod>(TimePeriod.Week);
     const lastUsedDate = ref("");
 
@@ -39,7 +39,7 @@ export const useUserStore = defineStore(
       return users.value;
     };
 
-    const addUser = (newUser: NewUserType) => {
+    const addUser = (newUser: UserType) => {
       users.value.push(newUser);
     };
 

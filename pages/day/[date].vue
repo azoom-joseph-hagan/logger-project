@@ -1,6 +1,6 @@
 <template>
-  <v-row class="my-1">
-    <v-col class="">
+  <v-row max-width="800" class="my-1">
+    <v-col>
       <v-row no-gutters class="d-flex justify-space-between align-center">
         <v-col
           class="d-flex flex-grow-1 flex-shrink-0 align-center justify-center text-center ga-2"
@@ -22,54 +22,47 @@
               </div>
             </div>
             <ProfileButton />
-            <div class="mt-4" v-if="dailyTrackedData">
-              <p class="text-subtitle-1">Total logged time:</p>
-              <p class="text-h5">{{ projectLoggedTime }}</p>
-            </div>
-            <div class="mt-4" v-if="dailyTrackedData">
-              <p class="text-subtitle-1">Current allocated time:</p>
-              <p class="text-h5">{{ projectTimeFormatted }}</p>
-            </div>
-            <p class="text-h6 mt-3" v-if="dailyTrackedData">
-              {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
-            </p>
-            <div>
-              <p class="text-red font-weight-bold text-body-2" v-if="error">
-                {{ error }}
-                <v-btn variant="outlined" color="red" @click="error = ''"
-                  >OK</v-btn
-                >
-              </p>
+            <div v-if="dailyTrackedData" class="d-sm-flex ga-sm-10">
+              <DayStatistic
+                title="Total logged time:"
+                :displayData="projectLoggedTime"
+              />
+              <DayStatistic
+                title="Current allocated time:"
+                :displayData="projectTimeFormatted"
+              />
             </div>
           </div>
         </v-col>
       </v-row>
+      <div>
+        <p
+          class="text-red text-center font-weight-bold text-body-2 ml-2"
+          v-if="error"
+        >
+          {{ error }}
+          <v-btn variant="flat" color="red" @click="error = ''">OK</v-btn>
+        </p>
+      </div>
       <v-divider class="border-opacity-25 mx-auto my-4" inset></v-divider>
+      <div class="d-flex justify-center">
+        <p class="text-h6 mt-3" v-if="dailyTrackedData">
+          {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
+        </p>
+      </div>
       <v-row>
-        <v-col class="wrapper">
-          <div
-            v-if="recordsExist"
-            class="flex-fill d-flex ma-1 pa-1 text-center"
-          >
-            <template
-              class="d-flex flex-fill justify-start"
-              v-for="(dayPercent, index) in dailyTrackedData?.trackedProjects"
-              :key="index"
-            >
-              <ProgressBarSection
-                :percentage="dayPercent.percent"
-                :barColor="dayPercent.color"
-                :project="dayPercent.project"
-                @delete-section="deleteProjectSection"
-              />
-            </template>
-          </div>
+        <v-col v-if="recordsExist">
+          <DayProgressBar
+            :dailyTrackedProjects="dailyTrackedData?.trackedProjects"
+            :deleteProjectSection="deleteProjectSection"
+          />
         </v-col>
       </v-row>
       <AllProjectAutocomplete
         :projectData="allProjects"
         :recentProjects="recentProjects"
         :addProjectPercentage="addProjectPercentage"
+        :totalLoggedHours="dailyTotalMinutes!"
         @set-error="setError"
       />
     </v-col>
@@ -88,24 +81,32 @@ const route = useRoute();
 const router = useRouter();
 const store = useUserStore();
 
-const date = route.params.date;
+const date = route.params.date as string;
 const error = ref("");
 
 const user = computed(() => store.getCurrentUser());
-const dailyTrackedData = computed(() =>
-  store.getCurrentDay(user.value.id, date)
-);
 
-const dailyTotalMinutes = computed(() =>
-  store.getDailyTotalMins(user.value.id, date)
-);
+const dailyTrackedData = computed(() => {
+  if (user.value) {
+    return store.getCurrentDay(user.value.id, date);
+  }
+});
 
-const dailyTrackedMinutes = computed(() =>
-  store.getDailyTrackedMins(user.value.id, date)
-);
+const dailyTotalMinutes = computed(() => {
+  if (user.value) {
+    return store.getDailyTotalMins(user.value?.id, date);
+  }
+});
+
+const dailyTrackedMinutes = computed(() => {
+  if (user.value) {
+    return store.getDailyTrackedMins(user.value.id, date);
+  }
+});
 
 const recordsExist = computed(
-  () => dailyTrackedData && dailyTrackedData.value.trackedProjects.length > 0
+  () =>
+    dailyTrackedData.value && dailyTrackedData.value.trackedProjects.length > 0
 );
 
 const addProjectPercentage = (
@@ -131,7 +132,9 @@ const addProjectPercentage = (
       trueColor,
     };
 
-    store.pushProjectData(user.value.id, date, projectData);
+    if (user.value) {
+      store.pushProjectData(user.value.id, date, projectData);
+    }
   }
 };
 
@@ -140,7 +143,11 @@ const setError = (errorMsg: string) => {
 };
 
 const deleteProjectSection = (projectName: string) => {
-  store.deleteProjectData(user.value.id, date, projectName);
+  {
+    if (user.value) {
+      return store.deleteProjectData(user.value.id, date, projectName);
+    }
+  }
 };
 
 const projectLoggedTime = computed(() =>
@@ -152,10 +159,8 @@ const projectTimeFormatted = computed(() =>
 );
 
 const allProjects = projects;
-const recentProjects: { name: string; color: string }[] = randomArraySelection(
-  projects,
-  5
-);
+const recentProjects: { name: string; color: string; trueColor: string }[] =
+  randomArraySelection(projects, 5);
 
 const handleBack = () => {
   router.back();
@@ -163,11 +168,3 @@ const handleBack = () => {
 
 provide("addProjectPercentage", addProjectPercentage);
 </script>
-
-<style scoped>
-.wrapper {
-  max-width: 800px;
-  margin: auto;
-}
-</style>
-../../stores/userStore

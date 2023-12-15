@@ -40,18 +40,26 @@
       ></v-autocomplete>
       <v-form
         class="d-flex align-center mt-3"
-        @submit.prevent="handleSubmit(+textInput)"
+        @submit.prevent="handleSubmit(textInput)"
       >
         <v-text-field
-          class="flex-grow-1 mr-2"
+          class="flex-grow-1 pr-2"
           clearable
           label="Tracked Time"
           v-model="textInput"
           density="comfortable"
-          hint="Enter a number in minutes"
+          hint="Enter a number in (Minutes: 60. Hours: 1h, 1:30, or Percentage: 25%)"
           variant="outlined"
+          :disabled="!projectSelected"
+          ref="textFieldRef"
         ></v-text-field>
-        <v-btn color="success" variant="flat" @click="handleSubmit(+textInput)"
+        <v-btn
+          class="align-self-stretch"
+          height="47"
+          color="success"
+          variant="flat"
+          @click="handleSubmit(textInput)"
+          :disabled="!projectSelected"
           >Add</v-btn
         >
       </v-form>
@@ -60,10 +68,26 @@
 </template>
 
 <script lang="ts" setup>
+import { generateTime } from "../../util/timeGenerator";
 const textInput = ref("");
 const model = ref<{ name: string; color: string; trueColor: string } | null>(
   null
 );
+const projectSelected = ref(false);
+const textFieldRef = ref<HTMLInputElement | null>(null);
+
+watch(model, async (oldVal) => {
+  if (model.value) {
+    projectSelected.value = true;
+    await nextTick();
+    if (textFieldRef.value) {
+      textFieldRef.value.focus();
+    }
+  } else {
+    projectSelected.value = false;
+  }
+});
+
 const props = defineProps<{
   projectData: { name: string; color: string; trueColor: string }[];
   recentProjects: { name: string; color: string; trueColor: string }[];
@@ -73,18 +97,14 @@ const props = defineProps<{
     color: string,
     trueColor: string
   ) => void;
+  totalLoggedHours: number;
 }>();
 
 const emit = defineEmits(["setError"]);
 
-const handleSubmit = (input: number) => {
+const handleSubmit = (input: string | number) => {
   if (!model.value) {
     emit("setError", "Please select a project");
-    textInput.value = "";
-    return;
-  }
-  if (isNaN(input)) {
-    emit("setError", "Please enter a number");
     textInput.value = "";
     return;
   }
@@ -92,10 +112,18 @@ const handleSubmit = (input: number) => {
     emit("setError", "Enter a number greater than 0");
     textInput.value = "";
     return;
+  }
+  const normalizedMins = generateTime(input, props.totalLoggedHours);
+  if (!normalizedMins) {
+    emit(
+      "setError",
+      "Enter in the correct formats: (Minutes: 60. Hours: 1h, 1:30, or Percentage: 25%)"
+    );
+    return;
   } else {
     if (model.value) {
       props.addProjectPercentage(
-        input,
+        normalizedMins.time,
         model.value.name,
         `bg-${model.value.color}`,
         model.value.trueColor

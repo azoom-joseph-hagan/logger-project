@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { NewWeekDataType } from "~/types";
+import type { WeekDataType } from "~/types";
 
-const props = defineProps<{ dayData: NewWeekDataType }>();
+const props = defineProps<{ dayData: WeekDataType }>();
 </script>
