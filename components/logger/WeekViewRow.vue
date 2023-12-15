@@ -40,7 +40,7 @@
       </div>
       <div class="mx-2">
         <v-btn
-          icon="mdi-chevron-right"
+          icon="mdi-timer-edit"
           variant="tonal"
           size="small"
           @click="$emit('button-clicked')"
