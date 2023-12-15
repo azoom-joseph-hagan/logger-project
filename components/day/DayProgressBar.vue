@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-fill d-flex ma-1 pa-1 text-center">
+  <div class="flex-fill d-flex ma-1 pa-1 text-center mx-auto maxWidth">
     <template
       class="d-flex flex-fill justify-start"
       v-for="(dayPercent, index) in dailyTrackedProjects"
@@ -23,3 +23,9 @@ const props = defineProps<{
   deleteProjectSection: (projectName: string) => void;
 }>();
 </script>
+
+<style scoped>
+.maxWidth {
+  max-width: 800px;
+}
+</style>

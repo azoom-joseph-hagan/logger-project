@@ -50,7 +50,7 @@
           {{ dailyTrackedData.percentageTrackedTime.toFixed(0) }} %
         </p>
       </div>
-      <v-row class="mt-2">
+      <v-row max-width="800" class="mt-2">
         <v-col v-if="recordsExist">
           <DayProgressBar
             :dailyTrackedProjects="dailyTrackedData!.trackedProjects"
