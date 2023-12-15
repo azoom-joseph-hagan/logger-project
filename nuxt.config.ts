@@ -28,4 +28,5 @@ export default defineNuxtConfig({
       pathPrefix: false,
     },
   ],
+  css: ["@/assets/css/main.css"],
 });

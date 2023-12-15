@@ -115,10 +115,6 @@ const handleSubmit = (input: number) => {
   .v-slide-group__next {
     display: none !important;
   }
-  html,
-  body {
-    overflow-x: hidden;
-  }
 }
 </style>
 

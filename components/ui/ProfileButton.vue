@@ -1,5 +1,10 @@
 <template>
-  <v-menu>
+  <v-menu
+    :close-on-content-click="false"
+    v-model="menuOpen"
+    content-class="custom-autocomplete-menu"
+    location="bottom center"
+  >
     <template v-slot:activator="{ props }">
       <v-btn variant="tonal" class="ml-2" v-bind="props">
         <div class="d-flex font-weight-bold text-overline align-center">
@@ -13,33 +18,40 @@
       </v-btn>
     </template>
     <v-list>
-      <v-list-item
-        v-for="(user, index) in users"
-        :key="index"
-        :value="user.name"
-        @click="handleSelect(user.id)"
-      >
-        <v-list-item-title>{{ user.name }}</v-list-item-title>
+      <v-list-item class="ma-0 px-2" min-width="250">
+        <v-autocomplete
+          v-model="model"
+          auto-select-first
+          density="comfortable"
+          hide-details="auto"
+          clearable
+          placeholder="Select Staff"
+          :items="users"
+          item-title="name"
+          item-value="name"
+          return-object
+          variant="outlined"
+        ></v-autocomplete>
       </v-list-item>
     </v-list>
-    <!-- <v-autocomplete
-      :items="users"
-      label="Select an user"
-      item-title="name"
-      item-value="id"
-    ></v-autocomplete> -->
   </v-menu>
 </template>
 
 <script lang="ts" setup>
+import type { NewUserType } from "~/types";
 import { useUserStore } from "../../stores/userStore";
 
 const store = useUserStore();
 const users = store.getAllUsers();
 const user = computed(() => store.getCurrentUser());
 
-const handleSelect = (id: number) => {
-  store.setCurrentUser(id);
-};
+const menuOpen = ref(false);
+const model = ref<NewUserType | null>(null);
+
+watch(model, (oldVal) => {
+  if (model.value) {
+    menuOpen.value = false;
+    store.setCurrentUser(model.value.id);
+  }
+});
 </script>
-../../stores/userStore

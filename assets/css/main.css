@@ -1,0 +1,13 @@
+/* MOBILE ONLY */
+@media (max-width: 500px) {
+  .v-slide-group__prev {
+    display: none !important;
+  }
+  .v-slide-group__next {
+    display: none !important;
+  }
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
