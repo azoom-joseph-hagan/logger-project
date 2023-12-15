@@ -5,6 +5,22 @@ export type UserType = {
   weekData: WeekDataType[][];
 };
 
+export type NewUserType = {
+  name: string;
+  id: number;
+  image: string;
+  projectData: NewWeekDataType[];
+};
+
+export type NewWeekDataType = {
+  date: string;
+  day: string;
+  totalLoggedTimeMins: number;
+  totalTrackedTimeMins: number;
+  percentageTrackedTime: number;
+  trackedProjects: TrackedProjectsType[];
+};
+
 export type WeekDataType = {
   day: string;
   date: string;
@@ -19,6 +35,7 @@ export type TrackedProjectsType = {
   mins: number;
   percent: number;
   color: string;
+  trueColor: string;
 };
 
 export type ProjectDayPercentageType = {
@@ -26,6 +43,7 @@ export type ProjectDayPercentageType = {
   // percent: number;
   project: string;
   color: string;
+  trueColor: string;
 };
 
 export type TempDailyDataType = {
@@ -35,3 +53,8 @@ export type TempDailyDataType = {
   totalLoggedTimeMins: number;
   totalTrackedTimeMins: number;
 };
+
+export enum TimePeriod {
+  Week = 0,
+  Month = 1,
+}

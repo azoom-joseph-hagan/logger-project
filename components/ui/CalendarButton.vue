@@ -1,19 +1,18 @@
 <template>
   <div>
-    <v-menu>
+    <v-menu :close-on-content-click="false" v-model="menuOpen">
       <template v-slot:activator="{ props }">
         <v-btn
           variant="tonal"
           v-bind="props"
           class="text-overline mb-2 text-blue"
         >
-          {{ text }}
+          {{ formattedDate }}
         </v-btn>
       </template>
-
       <v-list>
         <v-list-item>
-          <v-date-picker v-model="date"></v-date-picker>
+          <v-date-picker v-model="date" hide-header> </v-date-picker>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -21,11 +20,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-const props = defineProps(["text"]);
-
-const menu = ref(false);
+import { ref, watch } from "vue";
+const props = defineProps(["formattedDate"]);
 const date = ref(null);
-</script>
+const menuOpen = ref(false);
 
-<style></style>
+watch(date, (oldVal) => {
+  menuOpen.value = false;
+});
+
+const emit = defineEmits(["dateSelected"]);
+
+watch(date, (newDate) => {
+  emit("dateSelected", date.value);
+});
+</script>

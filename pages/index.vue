@@ -1,137 +1,231 @@
 <template>
   <div>
     <div class="d-flex justify-center pl-2 pt-2">
-      <v-btn-toggle
-        v-model="toggle"
-        color="primary"
-        mandatory
-        rounded="100"
-        variant="text"
-        density="compact"
-      >
-        <v-btn density="compact">週</v-btn>
-        <v-btn density="compact">月</v-btn>
-      </v-btn-toggle>
+      <WeekMonthToggleBtn />
     </div>
-    <div class="d-flex justify-space-between align-center px-5 py-10">
-      <BackButton
-        variant="outlined"
-        color="black"
-        :handleBack="handleBack"
-        :disabled="!canGoBack"
-      />
-      <div class="d-flex flex-column">
+    <div class="d-flex justify-center flex-column align-center px-5 py-10">
+      <div class="d-flex">
+        <CalendarButton
+          :formattedDate="formattedDate"
+          @date-selected="dateSelected"
+        />
         <ProfileButton :name="user?.name" :image="user?.image" />
-        <p class="py-2">{{ dateTitle }} - {{ dateEndTitle }}</p>
       </div>
-      <NextButton :handleNext="handleNext" :disabled="!canGoForward" />
+      <div class="py-2 d-flex align-center ga-5">
+        <BackButton :handleBack="handlePrevious" />
+        <div v-if="viewMode === TimePeriod.Week">
+          <p class="text-subtitle-2 text-md-h5">
+            {{ weekRange?.firstDayOfWeek }} - {{ weekRange?.lastDayOfWeek }}
+          </p>
+        </div>
+        <div v-else>
+          <p class="text-subtitle-2 text-md-h5">
+            {{ formattedDate.substring(0, 7) }}
+          </p>
+        </div>
+        <NextButton :handleNext="handleNext" />
+      </div>
     </div>
-    <div class="chart mx-auto">
-      <apexchart type="donut" :options="options" :series="series"></apexchart>
+    <div v-if="projectMinutes.length === 0" class="d-flex justify-center">
+      <p class="text-grey-darken-2">No Data</p>
+    </div>
+    <div class="chart mx-auto" v-else>
+      <div class="d-flex justify-end">
+        <v-btn-toggle
+          v-model="chartToggle"
+          color="primary"
+          mandatory
+          rounded="100"
+          variant="tonal"
+          density="compact"
+        >
+          <v-btn density="comfortable" icon="mdi-chart-pie"></v-btn>
+          <v-btn density="comfortable" icon="mdi-chart-bar"></v-btn>
+        </v-btn-toggle>
+      </div>
+      <div v-if="chartToggle">
+        <apexchart
+          type="bar"
+          :options="options"
+          :series="barSeries"
+        ></apexchart>
+      </div>
+      <div v-else>
+        <apexchart type="donut" :options="options" :series="series"></apexchart>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { WeekDataType } from "~/types";
+import { TimePeriod, type NewWeekDataType } from "~/types";
 import { useUserStore } from "../stores/userStore";
-import { createWeekLaterDate } from "~/util/createWeekLaterDate";
-
-const toggle = ref(0);
+import {
+  formatDate,
+  getMonthlyData,
+  getWeekRange,
+  getWeeklyData,
+  adjustDateByWeek,
+  adjustToMonthBoundary,
+} from "~/util/dateFunctions";
 
 const store = useUserStore();
 
+const selected = ref<Date | null>(null);
+const formattedDate = ref(store.getLastUsedDate() || formatDate(new Date()));
+const chartToggle = ref(true);
+
 const user = computed(() => store.getCurrentUser());
+const viewMode = computed(() => store.getViewMode());
 
-const weekNumber = ref(0);
+const getTimePeriodData = (dayData, timePeriod: TimePeriod) => {
+  if (timePeriod === TimePeriod.Week) {
+    return getWeeklyData(user.value.projectData, formattedDate.value);
+  } else {
+    return getMonthlyData(user.value.projectData, formattedDate.value);
+  }
+};
 
-function aggregateProjectMinutes(weekData: WeekDataType[]) {
-  return weekData.map((week) => {
-    const projectTotals = {};
-    const weekStartDate = week[0].date; // Assuming the first day of the week represents the week's date
+const displayData = ref<NewdisplayDataType[]>(
+  getTimePeriodData(user.value.projectData, viewMode.value)
+);
 
-    week.forEach((day) => {
-      day.trackedProjects.forEach((project) => {
-        if (!projectTotals[project.project]) {
-          projectTotals[project.project] = 0;
-        }
-        projectTotals[project.project] += project.mins;
-      });
+watch(viewMode, (oldValue) => {
+  displayData.value = getTimePeriodData(displayData.value, viewMode.value);
+});
+
+const weekRange = ref<{ firstDayOfWeek: string; lastDayOfWeek: string } | null>(
+  getWeekRange(formattedDate.value)
+);
+
+const dateSelected = (selectedDate: Date) => {
+  selected.value = formatDate(selectedDate);
+};
+
+watch(user, (newUser, oldUser) => {
+  displayData.value = getTimePeriodData(
+    user.value?.projectData,
+    viewMode.value
+  );
+  // getWeeklyData(
+  //   user.value.projectData,
+  //   formattedDate.value
+  // );
+});
+
+watch(selected, (newValue) => {
+  formattedDate.value = formatDate(newValue!);
+  weekRange.value = getWeekRange(formattedDate.value);
+  displayData.value = getTimePeriodData(user.value.projectData, viewMode.value);
+  store.setLastUsedDate(formattedDate.value);
+});
+
+function aggregateProjectMinutes(weekData) {
+  const projectTotals = {};
+
+  weekData.forEach((day) => {
+    day.trackedProjects.forEach((project) => {
+      if (!projectTotals[project.project]) {
+        projectTotals[project.project] = {
+          mins: 0,
+          color: project.color,
+          trueColor: project.trueColor,
+        };
+      }
+      projectTotals[project.project].mins += project.mins;
     });
-
-    const projects = Object.entries(projectTotals).map(([name, value]) => ({
-      name,
-      value,
-    }));
-
-    return { date: weekStartDate, projects };
   });
+
+  const projects = Object.entries(projectTotals).map(([name, data]) => ({
+    name,
+    value: data.mins,
+    color: data.color,
+    trueColor: data.trueColor,
+  }));
+  return projects;
 }
 
-const weeklyProjectMinutes = computed(() =>
-  aggregateProjectMinutes(user.value.weekData)
-);
+const projectMinutes = computed(() => {
+  return aggregateProjectMinutes(displayData.value);
+});
 
-const dateTitle = computed(
-  () => weeklyProjectMinutes.value[weekNumber.value].date
-);
-
-const dateEndTitle = computed(() => createWeekLaterDate(dateTitle.value));
-
-const labels = computed(() =>
-  weeklyProjectMinutes.value[weekNumber.value].projects.map((item) => item.name)
-);
-const values = computed(() =>
-  weeklyProjectMinutes.value[weekNumber.value].projects.map(
-    (item) => item.value
-  )
+const labels = computed(() => projectMinutes.value.map((item) => item.name));
+const values = computed(() => projectMinutes.value.map((item) => item.value));
+const seriesColors = computed(() =>
+  projectMinutes.value.map((item) => item.trueColor)
 );
 
 const series = ref(values);
-const options = ref({
+const barSeries = computed(() => [
+  {
+    name: "Time",
+    data: values.value,
+  },
+]);
+
+const options = computed(() => ({
   labels: labels.value,
   legend: {
     position: "bottom",
   },
-});
-
-const canGoBack = computed(() => weekNumber.value > 0);
-const canGoForward = computed(
-  () =>
-    weeklyProjectMinutes &&
-    weekNumber.value < weeklyProjectMinutes.value.length - 1
-);
-
-const handleBack = () => {
-  if (canGoBack.value) weekNumber.value = weekNumber.value - 1;
-};
+  chart: {
+    toolbar: {
+      show: false,
+    },
+  },
+  colors: seriesColors.value,
+  plotOptions: {
+    bar: {
+      distributed: true,
+    },
+  },
+  dataLabels: {
+    style: {
+      colors: ["#2f2f30"],
+    },
+    dropShadow: {
+      enabled: false,
+    },
+  },
+}));
 
 const handleNext = () => {
-  if (canGoForward.value) {
-    weekNumber.value = weekNumber.value + 1;
+  if (viewMode.value === TimePeriod.Week) {
+    selected.value = adjustDateByWeek(formattedDate.value, "forward");
+  } else {
+    selected.value = adjustToMonthBoundary(formattedDate.value, "forward");
+  }
+};
+
+const handlePrevious = () => {
+  if (viewMode.value === TimePeriod.Week) {
+    selected.value = adjustDateByWeek(formattedDate.value, "backward");
+  } else {
+    selected.value = adjustToMonthBoundary(formattedDate.value, "backward");
   }
 };
 </script>
 
 <style>
 .chart {
-  width: 400px;
+  width: 360px;
 }
 @media (min-width: 450px) {
   .chart {
-    width: 400px;
+    width: 440px;
   }
 }
 
 @media (min-width: 600px) {
   .chart {
-    width: 550px;
+    width: 590px;
   }
 }
 
 @media (min-width: 992px) {
   .chart {
-    width: 700px;
+    width: 800px;
   }
 }
 </style>
+~/util/dateFunctions ../stores/userStore
