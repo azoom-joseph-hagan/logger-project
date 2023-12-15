@@ -46,14 +46,14 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { useUserStore } from "../../../stores/userStoreNew";
+import { useUserStore } from "../../stores/userStore";
 import { computed, ref, watch, onMounted } from "vue";
 import {
   getWeeklyData,
   getWeekRange,
   formatDate,
   adjustDateByWeek,
-} from "../../../util/dateRanges";
+} from "../../util/dateFunctions";
 
 type NewUserType = {
   name: string;
@@ -110,7 +110,7 @@ onMounted(() => {
 
 const handleClick = (dayId: string) => {
   store.setLastUsedDate(dayId);
-  router.push({ path: `/new/day/${dayId}` });
+  router.push({ path: `/day/${dayId}` });
 };
 
 const handleNext = () => {
@@ -127,3 +127,4 @@ const dateSelected = (selectedDate: Date) => {
 </script>
 
 <style></style>
+../../stores/userStore

@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from "../../stores/userStoreNew";
+import { useUserStore } from "../../stores/userStore";
 const store = useUserStore();
 const viewMode = computed(() => store.getViewMode());
 const toggle = ref(viewMode.value);
@@ -24,3 +24,4 @@ watch(toggle, (oldValue) => {
 </script>
 
 <style></style>
+../../stores/userStore

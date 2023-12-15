@@ -79,10 +79,10 @@
 <script lang="ts" setup>
 import { provide, computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { formatTimeFromMinutes } from "../../../util/timeFunctions";
-import { useUserStore } from "../../../stores/userStoreNew";
-import { projects } from "../../../data/projects";
-import { randomArraySelection } from "../../../util/randomArraySelection";
+import { formatTimeFromMinutes } from "../../util/timeFunctions";
+import { useUserStore } from "../../stores/userStore";
+import { projects } from "../../data/projects";
+import { randomArraySelection } from "../../util/randomArraySelection";
 
 const route = useRoute();
 const router = useRouter();
@@ -170,3 +170,4 @@ provide("addProjectPercentage", addProjectPercentage);
   margin: auto;
 }
 </style>
+../../stores/userStore

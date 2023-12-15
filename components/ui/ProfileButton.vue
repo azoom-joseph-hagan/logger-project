@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from "../../stores/userStoreNew";
+import { useUserStore } from "../../stores/userStore";
 
 const store = useUserStore();
 const users = store.getAllUsers();
@@ -42,3 +42,4 @@ const handleSelect = (id: number) => {
   store.setCurrentUser(id);
 };
 </script>
+../../stores/userStore

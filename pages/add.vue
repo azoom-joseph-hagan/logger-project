@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { useUserStore } from "../../stores/userStoreNew";
+import { useUserStore } from "../stores/userStore";
 const store = useUserStore();
 
 const nameRef = ref("");
@@ -216,3 +216,4 @@ const createUser = () => {
 </script>
 
 <style></style>
+../stores/userStore

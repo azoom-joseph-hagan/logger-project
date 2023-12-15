@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { TimePeriod, type NewWeekDataType } from "~/types";
-import { useUserStore } from "../stores/userStoreNew";
+import { useUserStore } from "../stores/userStore";
 import {
   formatDate,
   getMonthlyData,
@@ -67,7 +67,7 @@ import {
   getWeeklyData,
   adjustDateByWeek,
   adjustToMonthBoundary,
-} from "~/util/dateRanges";
+} from "~/util/dateFunctions";
 
 const store = useUserStore();
 
@@ -228,3 +228,4 @@ const handlePrevious = () => {
   }
 }
 </style>
+~/util/dateFunctions ../stores/userStore

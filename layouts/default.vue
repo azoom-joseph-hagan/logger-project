@@ -8,14 +8,14 @@
           </v-list-item-action>
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
-        <v-list-item to="/new/logger" router exact>
+        <v-list-item to="/logger" router exact>
           <v-list-item-action>
             <v-icon>mdi-clock-edit-outline</v-icon>
           </v-list-item-action>
           <v-list-item-title>Log Time</v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/new/add" router exact>
+        <v-list-item to="/add" router exact>
           <v-list-item-action>
             <v-icon>mdi-account</v-icon>
           </v-list-item-action>
