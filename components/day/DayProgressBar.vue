@@ -16,6 +16,8 @@
 </template>
 
 <script lang="ts" setup>
+import type { TrackedProjectsType } from "~/types";
+
 const props = defineProps<{
   dailyTrackedProjects: TrackedProjectsType[];
   deleteProjectSection: (projectName: string) => void;

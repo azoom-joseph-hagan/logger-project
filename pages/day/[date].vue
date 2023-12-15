@@ -53,7 +53,7 @@
       <v-row class="mt-2">
         <v-col v-if="recordsExist">
           <DayProgressBar
-            :dailyTrackedProjects="dailyTrackedData?.trackedProjects"
+            :dailyTrackedProjects="dailyTrackedData!.trackedProjects"
             :deleteProjectSection="deleteProjectSection"
           />
         </v-col>
