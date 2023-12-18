@@ -12,7 +12,8 @@
       </template>
       <v-list>
         <v-list-item>
-          <v-date-picker v-model="date" hide-header> </v-date-picker>
+          <v-date-picker v-model="date" hide-header show-adjacent-months>
+          </v-date-picker>
         </v-list-item>
       </v-list>
     </v-menu>
