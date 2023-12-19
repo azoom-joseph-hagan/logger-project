@@ -113,8 +113,12 @@ const dateSelected = (selectedDate: Date) => {
   max-width: 800px;
   margin: 0 auto;
   padding: 1rem;
-  margin-top: 2rem;
+
   border-radius: 0.5rem;
+
+  @media (min-width: 850px) {
+    margin-top: 2rem;
+  }
 }
 .card-inner {
   display: flex;
