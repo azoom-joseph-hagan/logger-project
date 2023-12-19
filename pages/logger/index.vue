@@ -2,21 +2,19 @@
   <v-row>
     <v-col v-if="dayData">
       <v-card-item>
-        <div class="d-flex justify-center align-center py-4">
-          <div class="d-flex flex-column justify-center align-center">
-            <div class="d-flex">
+        <div class="card-inner">
+          <div class="header">
+            <div class="button-container">
               <CalendarButton
                 :formattedDate="formattedDate"
                 @date-selected="dateSelected"
               />
               <ProfileButton />
             </div>
-            <v-row class="mt-2">
+            <v-row class="date-container">
               <BackButton :handleBack="handlePrevious" />
-              <div
-                class="text-subtitle-2 text-md-h5 text-center font-weight-bold mb-5 mx-3 my-2"
-              >
-                <p class="inline-block">
+              <div class="date-wrapper">
+                <p class="date">
                   {{ weekRange?.firstDayOfWeek }} -
                   {{ weekRange?.lastDayOfWeek }}
                 </p>
@@ -25,8 +23,8 @@
             </v-row>
           </div>
         </div>
-        <v-card color="grey-lighten-3 mx-auto" max-width="800">
-          <div v-if="dayData.length !== 0">
+        <v-card color="grey-lighten-3" max-width="800">
+          <div class="week-rows" v-if="dayData.length !== 0">
             <WeekViewRow
               v-for="(day, index) in dayData"
               :dayData="day"
@@ -108,3 +106,51 @@ const dateSelected = (selectedDate: Date) => {
   selected.value = formatDate(selectedDate);
 };
 </script>
+
+<style lang="scss" scoped>
+.card-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+
+  > .header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.button-container {
+  display: flex;
+}
+
+.date-container {
+  margin-top: 0.5rem;
+}
+
+.date-wrapper {
+  // text-md-h5
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 1rem 2rem 1rem 3rem;
+  text-align: center;
+  color: #4e4e4e;
+
+  > .date {
+    display: inline-block;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1.4rem;
+  }
+
+  .week-rows {
+    margin-left: auto;
+    margin-right: auto;
+    margin: 0 auto;
+  }
+}
+</style>
