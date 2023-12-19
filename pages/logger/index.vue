@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col v-if="dayData">
-      <v-card-item>
+      <section class="logger-card">
         <div class="card-inner">
           <div class="header">
             <div class="button-container">
@@ -23,7 +23,7 @@
             </v-row>
           </div>
         </div>
-        <v-card color="grey-lighten-3" max-width="800">
+        <div class="week-container">
           <div class="week-rows" v-if="dayData.length !== 0">
             <WeekViewRow
               v-for="(day, index) in dayData"
@@ -34,8 +34,8 @@
           <div v-else>
             <p>No data</p>
           </div>
-        </v-card>
-      </v-card-item>
+        </div>
+      </section>
     </v-col>
   </v-row>
 </template>
@@ -108,6 +108,14 @@ const dateSelected = (selectedDate: Date) => {
 </script>
 
 <style lang="scss" scoped>
+.logger-card {
+  background-color: #f6f6f6;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  margin-top: 2rem;
+  border-radius: 0.5rem;
+}
 .card-inner {
   display: flex;
   justify-content: center;
@@ -132,7 +140,6 @@ const dateSelected = (selectedDate: Date) => {
 }
 
 .date-wrapper {
-  // text-md-h5
   font-size: 1rem;
   font-weight: bold;
   margin: 1rem 2rem 1rem 3rem;
@@ -146,11 +153,17 @@ const dateSelected = (selectedDate: Date) => {
   @media (min-width: 768px) {
     font-size: 1.4rem;
   }
+}
 
-  .week-rows {
-    margin-left: auto;
-    margin-right: auto;
-    margin: 0 auto;
-  }
+.week-container {
+  max-width: 750px;
+  background-color: #ededed;
+  border-radius: 0.5rem;
+  margin: 0 auto;
+}
+.week-rows {
+  margin-left: auto;
+  margin-right: auto;
+  margin: 0 auto;
 }
 </style>
